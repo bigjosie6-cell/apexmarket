@@ -374,6 +374,13 @@ export default function Home() {
                   Demo
                 </a>
                 <a
+                  href="/donate"
+                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Donate
+                </a>
+                <a
                   href="/open-account"
                   className="rounded-md bg-gold px-4 py-3 text-center text-sm font-bold text-navy"
                   onClick={() => setMobileMenuOpen(false)}
