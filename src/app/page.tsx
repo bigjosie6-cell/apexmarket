@@ -393,23 +393,23 @@ export default function Home() {
         ) : null}
       </header>
 
-      <section id="home" className="relative overflow-hidden bg-navy text-white">
+      <section id="home" className="relative overflow-hidden bg-white text-navy transition-colors duration-300 dark:bg-navy dark:text-white">
         <div className="absolute inset-0">
           <Image
-            className="h-full w-full object-cover opacity-30"
+            className="h-full w-full object-cover opacity-16 grayscale dark:opacity-30 dark:grayscale-0"
             src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=1800&q=80"
             alt="Professional trading desk with financial market screens"
             fill
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(212,175,55,.24),transparent_34%),linear-gradient(90deg,#0A1F44_0%,rgba(10,31,68,.9)_46%,rgba(10,31,68,.7)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(212,175,55,.18),transparent_34%),linear-gradient(90deg,rgba(255,255,255,.98)_0%,rgba(248,250,252,.94)_50%,rgba(226,232,240,.82)_100%)] dark:bg-[radial-gradient(circle_at_70%_20%,rgba(212,175,55,.24),transparent_34%),linear-gradient(90deg,#0A1F44_0%,rgba(10,31,68,.9)_46%,rgba(10,31,68,.7)_100%)]" />
         </div>
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <p className="mb-4 text-sm font-bold uppercase tracking-[0.32em] text-gold">Institutional forex and CFD trading</p>
             <h1 className="max-w-3xl text-5xl font-semibold leading-tight md:text-6xl">Trade Global Markets with Confidence</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-200">
               Access forex, commodities, indices, and CFDs through institutional-grade technology and competitive spreads.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -419,16 +419,16 @@ export default function Home() {
               <a href="/open-account" className="inline-flex items-center justify-center rounded-md border border-gold/70 px-6 py-4 font-bold text-gold">
                 Register to Trade
               </a>
-              <a href="#live-chart" className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-4 font-bold text-white">
+              <a href="#live-chart" className="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-4 font-bold text-navy dark:border-white/30 dark:text-white">
                 Live Chart
               </a>
-              <a href="/demo-account" className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-4 font-bold text-white">
+              <a href="/demo-account" className="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-4 font-bold text-navy dark:border-white/30 dark:text-white">
                 Try Demo Account
               </a>
             </div>
             <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {["100+ Trading Instruments", "Ultra-Low Spreads", "Fast Execution", "24/5 Support"].map((stat) => (
-                <div key={stat} className="rounded-md border border-white/15 bg-white/8 p-4 backdrop-blur">
+                <div key={stat} className="rounded-md border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-white/15 dark:bg-white/8 dark:shadow-none">
                   <Check className="mb-3 size-5 text-gold" />
                   <p className="text-sm font-semibold">{stat}</p>
                 </div>
@@ -441,14 +441,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="live-chart" className="bg-[#07111f] py-20 text-white">
+      <section id="live-chart" className="bg-slate-100 py-20 text-navy transition-colors duration-300 dark:bg-[#07111f] dark:text-white">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="section-kicker">Real-time market chart</p>
-              <h2 className="section-title text-white">Track EUR/USD with a live advanced chart</h2>
+              <h2 className="section-title">Track EUR/USD with a live advanced chart</h2>
             </div>
-            <p className="max-w-xl text-slate-300">
+            <p className="max-w-xl text-slate-600 dark:text-slate-300">
               Powered by a TradingView market widget for charting and analysis. Trade execution still requires an approved broker connection.
             </p>
           </div>
