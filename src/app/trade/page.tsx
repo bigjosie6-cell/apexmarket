@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { ArrowDown, ArrowUp, CircleDollarSign, Landmark, LineChart, ShieldAlert, WalletCards } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, CircleDollarSign, Landmark, LineChart, ShieldAlert, UserPlus, WalletCards } from "lucide-react";
 
 const symbols = [
   ["EUR/USD", "1.08756", "1.08763", "0.7"],
@@ -19,26 +19,11 @@ export default function TradePage() {
   const [volume, setVolume] = useState("0.10");
   const [orderType, setOrderType] = useState<"Market" | "Limit" | "Stop">("Market");
   const [status, setStatus] = useState("Live execution is disabled until a licensed broker API is connected.");
-  const [loading, setLoading] = useState(false);
   const selected = symbols.find(([name]) => name === symbol) ?? symbols[0];
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        accountNumber: "AFX-LIVE-PENDING",
-        symbol,
-        side,
-        volume,
-        orderType,
-      }),
-    });
-    const result = await response.json();
-    setStatus(result.message ?? "Order request received.");
-    setLoading(false);
+    setStatus("Registration is required before trade requests can be submitted.");
   };
 
   return (
@@ -58,11 +43,24 @@ export default function TradePage() {
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
         <aside className="grid gap-5">
+          <article className="rounded-lg border border-gold/40 bg-gold/10 p-5">
+            <UserPlus className="size-7 text-gold" />
+            <h1 className="mt-3 text-2xl font-bold">Register before trading</h1>
+            <p className="mt-2 text-sm leading-6 text-amber-100">
+              Create an ApexFX account first so your profile, country, contact details, account type, and verification status are ready before terminal access.
+            </p>
+            <Link href="/open-account" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-bold text-navy">
+              Open Trading Account <ArrowRight className="size-4" />
+            </Link>
+            <Link href="/demo-account" className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-white/15 px-4 py-3 text-sm font-bold">
+              Try Demo Account
+            </Link>
+          </article>
           <article className="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5">
             <ShieldAlert className="size-7 text-gold" />
-            <h1 className="mt-3 text-2xl font-bold">Broker connection required</h1>
+            <h2 className="mt-3 text-xl font-bold">Terminal access locked</h2>
             <p className="mt-2 text-sm leading-6 text-amber-100">
-              This terminal is live-ready, but it will not send real orders until ApexFX has a licensed broker execution API, KYC-approved accounts, risk checks, and production credentials.
+              Live execution stays locked until the account registration and approval steps are completed.
             </p>
           </article>
           <Metric icon={WalletCards} label="Live Balance" value="$0.00" />
@@ -140,9 +138,9 @@ export default function TradePage() {
               <div className="mt-4 rounded-md bg-[#061126] p-4 text-sm text-slate-300">
                 Selected {side} {volume} lots of {symbol} at indicative {side === "Buy" ? selected[2] : selected[1]}.
               </div>
-              <button disabled={loading} className="mt-4 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:opacity-60">
-                {loading ? "Submitting..." : "Submit Order Request"}
-              </button>
+              <Link href="/open-account" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
+                Register to Trade <ArrowRight className="size-4" />
+              </Link>
               <p className="mt-4 rounded-md border border-white/10 bg-white/5 p-3 text-sm text-slate-300">{status}</p>
             </form>
           </section>

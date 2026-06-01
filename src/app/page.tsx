@@ -333,7 +333,7 @@ export default function Home() {
             ))}
           </div>
           <div className="hidden items-center gap-3 lg:flex">
-            <a href="/trade" className="px-3 py-2 text-sm font-semibold">Trade</a>
+            <a href="/open-account" className="px-3 py-2 text-sm font-semibold">Trade</a>
             <a href="/open-account" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy shadow-lg shadow-gold/20">Open Account</a>
           </div>
           <button
@@ -360,7 +360,7 @@ export default function Home() {
               ))}
               <div className="mt-2 grid grid-cols-2 gap-3">
                 <a
-                  href="/trade"
+                  href="/open-account"
                   className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -409,8 +409,8 @@ export default function Home() {
               <a href="/open-account" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-4 font-bold text-navy">
                 Open Live Account <ArrowRight className="size-4" />
               </a>
-              <a href="/trade" className="inline-flex items-center justify-center rounded-md border border-gold/70 px-6 py-4 font-bold text-gold">
-                View Live Terminal
+              <a href="/open-account" className="inline-flex items-center justify-center rounded-md border border-gold/70 px-6 py-4 font-bold text-gold">
+                Register to Trade
               </a>
               <a href="#live-chart" className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-4 font-bold text-white">
                 Live Chart
