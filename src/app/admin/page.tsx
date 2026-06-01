@@ -3,11 +3,15 @@
 import { FormEvent, useState } from "react";
 import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
 
+const paymentMethods = ["Bank Transfer", "Debit/Credit Card", "Mobile Money", "Crypto USDT"];
+
 export default function AdminPage() {
   const [adminId, setAdminId] = useState("");
   const [secret, setSecret] = useState("");
   const [depositId, setDepositId] = useState("");
   const [receivingAddress, setReceivingAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Bank Transfer");
+  const [paymentInstructions, setPaymentInstructions] = useState("");
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
 
@@ -53,6 +57,29 @@ export default function AdminPage() {
     });
     const result = await response.json();
     setMessage(result.message ?? `Deposit ${result.depositId} approved.`);
+  };
+
+  const savePaymentDetails = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage("Saving payment details...");
+
+    try {
+      const response = await fetch("/api/admin/payment-details", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-id": adminId,
+          "x-admin-role": "SUPER_ADMIN",
+          "x-admin-secret": secret,
+        },
+        body: JSON.stringify({ method: paymentMethod, instructions: paymentInstructions }),
+      });
+      const result = await response.json();
+      setMessage(result.message ?? (response.ok ? "Payment details saved." : "Payment details could not be saved."));
+    } catch {
+      setMessage("Payment details could not be saved. Check your connection and try again.");
+    }
   };
 
   const logout = async () => {
@@ -114,6 +141,31 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr]">
+          <form onSubmit={savePaymentDetails} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+            <WalletCards className="size-8 text-gold" />
+            <h2 className="mt-4 text-2xl font-bold">Deposit Payment Details</h2>
+            <p className="mt-2 text-sm text-slate-300">Choose a payment method and enter the details users should see after creating a deposit request.</p>
+            <label className="mt-5 grid gap-2 text-sm font-semibold">
+              Payment method
+              <select className="form-field" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)} disabled={!signedIn}>
+                {paymentMethods.map((method) => <option key={method}>{method}</option>)}
+              </select>
+            </label>
+            <label className="mt-4 grid gap-2 text-sm font-semibold">
+              Payment details or instructions
+              <textarea
+                className="form-field min-h-32"
+                value={paymentInstructions}
+                onChange={(event) => setPaymentInstructions(event.target.value)}
+                placeholder="Example: Pay to this account/wallet, include the deposit reference, then contact support after payment."
+                disabled={!signedIn}
+              />
+            </label>
+            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
+              Save Payment Details
+            </button>
+          </form>
+
           <form onSubmit={approveDeposit} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
             <WalletCards className="size-8 text-gold" />
             <h2 className="mt-4 text-2xl font-bold">Approve Deposit</h2>

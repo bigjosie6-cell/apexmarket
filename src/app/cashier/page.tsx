@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowLeft, CreditCard, Landmark, LockKeyhole, MessageCircle, Smartphone, WalletCards } from "lucide-react";
 
@@ -12,6 +13,7 @@ const methods = [
 ];
 
 export default function CashierPage() {
+  const router = useRouter();
   const [method, setMethod] = useState("Bank Transfer");
   const [amount, setAmount] = useState("1000");
   const [currency, setCurrency] = useState("USD");
@@ -36,6 +38,16 @@ export default function CashierPage() {
     const result = await response.json();
     setStatus(result.depositReference ? `${result.message} Reference: ${result.depositReference}` : result.message);
     setLoading(false);
+    if (response.ok && result.depositReference) {
+      const params = new URLSearchParams({
+        ref: result.depositReference,
+        method,
+        amount,
+        currency,
+        email,
+      });
+      router.push(`/deposit-details?${params.toString()}`);
+    }
   };
 
   return (
