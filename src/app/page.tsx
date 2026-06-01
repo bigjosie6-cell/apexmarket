@@ -367,13 +367,6 @@ export default function Home() {
                   Trade
                 </a>
                 <a
-                  href="/admin"
-                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin
-                </a>
-                <a
                   href="/demo-account"
                   className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
                   onClick={() => setMobileMenuOpen(false)}
