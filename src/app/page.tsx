@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   Smartphone,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -40,6 +41,14 @@ const navItems = [
   "Contact",
   "Support",
 ];
+
+const navHref = (item: string) => {
+  if (item === "Home") return "#home";
+  if (item === "Gives") return "/donate";
+  if (item === "Support") return "/support";
+  if (item === "Contact") return "/support";
+  return `#${item.toLowerCase().replaceAll(" ", "-")}`;
+};
 
 const instruments = [
   {
@@ -295,17 +304,19 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen bg-white text-navy dark:bg-[#07111f] dark:text-white">
       <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-[#07111f]/90">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8" aria-label="Main navigation">
-          <a href="#" className="flex items-center gap-3 font-semibold">
+          <a href="#home" className="flex items-center gap-3 font-semibold" onClick={() => setMobileMenuOpen(false)}>
             <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">AX</span>
             <span className="text-xl">ApexFX Markets</span>
           </a>
           <div className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 lg:flex">
             {navItems.map((item) => (
-              <a key={item} href={item === "Gives" ? "/donate" : item === "Support" ? "/support" : `#${item.toLowerCase().replaceAll(" ", "-")}`} className="hover:text-gold">
+              <a key={item} href={navHref(item)} className="hover:text-gold">
                 {item}
               </a>
             ))}
@@ -314,10 +325,61 @@ export default function Home() {
             <a href="/trade" className="px-3 py-2 text-sm font-semibold">Trade</a>
             <a href="/open-account" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy shadow-lg shadow-gold/20">Open Account</a>
           </div>
-          <button className="rounded-md border border-slate-300 p-2 lg:hidden" aria-label="Open menu">
-            <Menu className="size-5" />
+          <button
+            className="rounded-md border border-slate-300 p-2 lg:hidden dark:border-white/30"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </nav>
+        {mobileMenuOpen ? (
+          <div className="border-t border-slate-200 bg-white px-4 pb-5 pt-2 shadow-xl dark:border-white/10 dark:bg-[#07111f] lg:hidden">
+            <div className="mx-auto grid max-w-7xl gap-2">
+              {navItems.map((item) => (
+                <a
+                  key={item}
+                  href={navHref(item)}
+                  className="rounded-md px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-gold dark:text-slate-200 dark:hover:bg-white/10"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
+              <div className="mt-2 grid grid-cols-2 gap-3">
+                <a
+                  href="/trade"
+                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Trade
+                </a>
+                <a
+                  href="/admin"
+                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </a>
+                <a
+                  href="/demo-account"
+                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Demo
+                </a>
+                <a
+                  href="/open-account"
+                  className="rounded-md bg-gold px-4 py-3 text-center text-sm font-bold text-navy"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Open Account
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </header>
 
       <section id="home" className="relative overflow-hidden bg-navy text-white">
