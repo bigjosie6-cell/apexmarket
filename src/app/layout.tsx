@@ -46,6 +46,7 @@ export default function RootLayout({
                 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
                 const theme = savedTheme || (prefersDark ? "dark" : "light");
                 document.documentElement.classList.toggle("dark", theme === "dark");
+                document.documentElement.dataset.theme = theme;
                 document.documentElement.style.colorScheme = theme;
               } catch {}
             `,
