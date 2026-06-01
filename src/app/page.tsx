@@ -306,6 +306,17 @@ function Stat({ label, value }: { label: string; value: string }) {
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <main className="min-h-screen bg-white text-navy dark:bg-[#07111f] dark:text-white">
       <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-[#07111f]/90">
@@ -335,7 +346,7 @@ export default function Home() {
           </button>
         </nav>
         {mobileMenuOpen ? (
-          <div className="border-t border-slate-200 bg-white px-4 pb-5 pt-2 shadow-xl dark:border-white/10 dark:bg-[#07111f] lg:hidden">
+          <div className="fixed inset-x-0 top-[73px] z-50 max-h-[calc(100dvh-73px)] overflow-y-auto overscroll-contain border-t border-slate-200 bg-white px-4 pb-6 pt-2 shadow-2xl dark:border-white/10 dark:bg-[#07111f] lg:hidden">
             <div className="mx-auto grid max-w-7xl gap-2">
               {navItems.map((item) => (
                 <a
