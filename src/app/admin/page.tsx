@@ -25,13 +25,25 @@ export default function AdminPage() {
 
   const saveDonationAddress = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const response = await fetch("/api/admin/donation-address", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ receivingAddress }),
-    });
-    const result = await response.json();
-    setMessage(result.message);
+    setMessage("Saving donation receiving address...");
+
+    try {
+      const response = await fetch("/api/admin/donation-address", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-id": adminId,
+          "x-admin-role": "SUPER_ADMIN",
+          "x-admin-secret": secret,
+        },
+        body: JSON.stringify({ receivingAddress }),
+      });
+      const result = await response.json();
+      setMessage(result.message ?? (response.ok ? "Donation receiving address saved." : "Donation address could not be saved."));
+    } catch {
+      setMessage("Donation address could not be saved. Check your connection and try again.");
+    }
   };
 
   const approveDeposit = async (event: FormEvent<HTMLFormElement>) => {
