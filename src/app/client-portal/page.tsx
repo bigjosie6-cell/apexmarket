@@ -34,13 +34,13 @@ type Application = {
 const fallback: Application = {
   firstName: "Demo",
   lastName: "Trader",
-  email: "demo@apexfxmarkets.com",
-  country: "Nigeria",
+  email: "demo@hutridgefinancial.com",
+  country: "United States",
   accountType: "Standard",
   baseCurrency: "USD",
   fundingMethod: "Bank Transfer",
   expectedDeposit: "1000",
-  accountNumber: "AFX-DEMO01",
+  accountNumber: "HF-DEMO01",
   status: "Verified",
   submittedAt: new Date().toISOString(),
 };
@@ -57,7 +57,7 @@ export default function ClientPortalPage() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      const saved = localStorage.getItem("apexfx-application");
+      const saved = localStorage.getItem("hutridge-application");
       if (saved) setApplication(JSON.parse(saved));
     });
   }, []);
@@ -72,8 +72,8 @@ export default function ClientPortalPage() {
       <header className="border-b border-slate-200 bg-white px-4 py-4 dark:border-white/10 dark:bg-[#07111f] lg:px-8">
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">AX</span>
-            <span>ApexFX Client Area</span>
+            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">HF</span>
+            <span>Hutridge Financial Client Area</span>
           </Link>
           <div className="flex items-center gap-3">
             <button className="rounded-md border border-slate-200 p-2 dark:border-white/10" aria-label="Notifications">
@@ -99,7 +99,7 @@ export default function ClientPortalPage() {
               <p className="section-kicker">Application received</p>
               <h1 className="mt-3 text-4xl font-bold">Welcome, {application.firstName}</h1>
               <p className="mt-3 max-w-2xl text-slate-300">
-                Your ApexFX Markets account application has been created and is queued for compliance review. This client area is now active for status tracking, funding preview, and platform access.
+                Your Hutridge Financial account application has been created and is queued for compliance review. This client area is now active for status tracking, funding preview, and platform access.
               </p>
             </div>
             <div className="rounded-lg border border-white/15 bg-white/10 p-5">

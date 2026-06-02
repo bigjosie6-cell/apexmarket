@@ -147,7 +147,7 @@ function PlatformTerminal() {
     <div className="rounded-lg border border-white/15 bg-[#081832]/90 p-4 shadow-2xl shadow-black/40">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold">ApexFX Terminal</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-gold">Hutridge Financial Terminal</p>
           <h3 className="text-lg font-semibold text-white">Institutional liquidity view</h3>
         </div>
         <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs text-emerald-200">Live</span>
@@ -322,8 +322,8 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-[#07111f]/90">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8" aria-label="Main navigation">
           <a href="#home" className="flex items-center gap-3 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">AX</span>
-            <span className="text-xl">ApexFX Markets</span>
+            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">HF</span>
+            <span className="text-xl">Hutridge Financial</span>
           </a>
           <div className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 lg:flex">
             {navItems.map((item) => (
@@ -543,7 +543,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-20 lg:px-8">
-        <p className="section-kicker">Why choose ApexFX</p>
+        <p className="section-kicker">Why choose Hutridge Financial</p>
         <h2 className="section-title">Built for trust, speed, and scale</h2>
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {why.map(({ title, body, icon: Icon }) => (
@@ -575,7 +575,7 @@ export default function Home() {
       <section id="partners" className="mx-auto grid max-w-7xl gap-8 px-4 py-20 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div>
           <p className="section-kicker">Introducing broker program</p>
-          <h2 className="section-title">Grow Your Business with ApexFX Partners</h2>
+          <h2 className="section-title">Grow Your Business with Hutridge Financial Partners</h2>
           <a href="#contact" className="mt-8 inline-flex rounded-md bg-gold px-6 py-4 font-bold text-navy">Become a Partner</a>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -588,7 +588,7 @@ export default function Home() {
       <section className="bg-slate-50 py-20 dark:bg-white/5">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>
-            <p className="section-kicker">ApexFX Gives</p>
+            <p className="section-kicker">Hutridge Financial Gives</p>
             <h2 className="section-title">Trade markets and support community campaigns</h2>
             <p className="mt-5 max-w-xl text-slate-600 dark:text-slate-300">
               Explore a dedicated giving hub for U.S. charitable initiatives across financial literacy, veteran support, youth STEM, and small business recovery.
@@ -615,7 +615,7 @@ export default function Home() {
             {["Company Story", "Mission & Vision", "Global Presence"].map((item) => (
               <div key={item} className="rounded-lg border border-white/15 bg-white/5 p-6">
                 <h3 className="text-xl font-semibold">{item}</h3>
-                <p className="mt-3 text-slate-300">ApexFX Markets combines modern fintech infrastructure, client education, and relationship-led service for retail, professional, partner, and institutional clients.</p>
+                <p className="mt-3 text-slate-300">Hutridge Financial combines modern fintech infrastructure, client education, and relationship-led service for retail, professional, partner, and institutional clients.</p>
               </div>
             ))}
           </div>
@@ -638,7 +638,7 @@ export default function Home() {
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-white/5">
           <div className="grid gap-4 text-sm">
             <p><strong>Live Chat:</strong> Available 24/5</p>
-            <p><strong>Support Email:</strong> support@apexfxmarkets.com</p>
+            <p><strong>Support Email:</strong> support@hutridgefinancial.com</p>
             <p><strong>Office Address:</strong> 25 Finance Avenue, Victoria Island, Lagos</p>
             <p><strong>Business Hours:</strong> Monday to Friday, 24 hours</p>
           </div>
@@ -652,7 +652,7 @@ export default function Home() {
       <footer className="bg-[#051124] px-4 py-12 text-white lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_repeat(4,1fr)]">
           <div>
-            <h2 className="text-2xl font-semibold">ApexFX Markets</h2>
+            <h2 className="text-2xl font-semibold">Hutridge Financial</h2>
             <p className="mt-4 text-sm leading-6 text-slate-300">Trading foreign exchange and CFDs involves significant risk and may not be suitable for all investors. You may lose more than your initial investment.</p>
           </div>
           {["Company", "Trading", "Legal", "Support"].map((group) => (
@@ -660,7 +660,7 @@ export default function Home() {
               <h3 className="font-semibold text-gold">{group}</h3>
               <div className="mt-4 grid gap-2 text-sm text-slate-300">
                 {["Privacy Policy", "Terms & Conditions", "AML Policy", "KYC Policy", "Risk Disclosure"].slice(0, group === "Legal" ? 5 : 3).map((item) => <a key={item} href="#">{item}</a>)}
-                {group === "Company" ? <a href="/donate">ApexFX Gives</a> : null}
+                {group === "Company" ? <a href="/donate">Hutridge Financial Gives</a> : null}
                 {group === "Support" ? <a href="/support">Support Center</a> : null}
               </div>
             </div>

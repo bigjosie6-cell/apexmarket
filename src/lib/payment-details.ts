@@ -11,7 +11,7 @@ export type PaymentDetailsRecord = {
 
 export type PaymentDetailsMap = Record<string, PaymentDetailsRecord>;
 
-const dataDir = process.env.VERCEL ? path.join(os.tmpdir(), "apexfx-data") : path.join(process.cwd(), ".data");
+const dataDir = process.env.VERCEL ? path.join(os.tmpdir(), "hutridge-data") : path.join(process.cwd(), ".data");
 const dataFile = path.join(dataDir, "payment-details.json");
 const globalPaymentDetails = globalThis as typeof globalThis & {
   apexfxPaymentDetails?: PaymentDetailsMap;
@@ -20,25 +20,25 @@ const globalPaymentDetails = globalThis as typeof globalThis & {
 const defaultDetails: PaymentDetailsMap = {
   "Bank Transfer": {
     method: "Bank Transfer",
-    instructions: "Payment details are pending admin update. An ApexFX payments representative will provide bank instructions shortly.",
+    instructions: "Payment details are pending admin update. An Hutridge Financial payments representative will provide bank instructions shortly.",
     updatedAt: "",
     updatedBy: "system",
   },
   "Debit/Credit Card": {
     method: "Debit/Credit Card",
-    instructions: "Card funding details are pending admin update. An ApexFX payments representative will confirm card payment instructions shortly.",
+    instructions: "Card funding details are pending admin update. An Hutridge Financial payments representative will confirm card payment instructions shortly.",
     updatedAt: "",
     updatedBy: "system",
   },
   "Mobile Money": {
     method: "Mobile Money",
-    instructions: "Mobile money details are pending admin update. An ApexFX payments representative will provide the receiving account shortly.",
+    instructions: "Mobile money details are pending admin update. An Hutridge Financial payments representative will provide the receiving account shortly.",
     updatedAt: "",
     updatedBy: "system",
   },
   "Crypto USDT": {
     method: "Crypto USDT",
-    instructions: "USDT receiving details are pending admin update. An ApexFX payments representative will provide the correct wallet and network shortly.",
+    instructions: "USDT receiving details are pending admin update. An Hutridge Financial payments representative will provide the correct wallet and network shortly.",
     updatedAt: "",
     updatedBy: "system",
   },
@@ -65,7 +65,7 @@ export async function getPaymentDetails(method?: string): Promise<PaymentDetails
   if (!method) return records;
   return records[method] ?? {
     method,
-    instructions: "Payment details are pending admin update. An ApexFX payments representative will provide instructions shortly.",
+    instructions: "Payment details are pending admin update. An Hutridge Financial payments representative will provide instructions shortly.",
     updatedAt: "",
     updatedBy: "system",
   };

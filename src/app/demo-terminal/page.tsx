@@ -29,12 +29,12 @@ type Position = {
 const fallback: DemoAccount = {
   firstName: "Demo",
   lastName: "Trader",
-  email: "demo@apexfxmarkets.com",
-  platform: "ApexFX WebTrader",
+  email: "demo@hutridgefinancial.com",
+  platform: "Hutridge Financial WebTrader",
   balance: "50,000",
   login: "D000001",
   password: "Apex-demo",
-  server: "ApexFX-Demo",
+  server: "Hutridge Financial-Demo",
   equity: 50000,
   createdAt: new Date().toISOString(),
 };
@@ -58,7 +58,7 @@ export default function DemoTerminalPage() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      const saved = localStorage.getItem("apexfx-demo-account");
+      const saved = localStorage.getItem("hutridge-demo-account");
       if (saved) setAccount(JSON.parse(saved));
     });
   }, []);
@@ -95,8 +95,8 @@ export default function DemoTerminalPage() {
       <header className="border-b border-white/10 bg-[#07111f] px-4 py-4 lg:px-8">
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="grid size-10 place-items-center rounded-md bg-white text-gold">AX</span>
-            <span>ApexFX Demo Terminal</span>
+            <span className="grid size-10 place-items-center rounded-md bg-white text-gold">HF</span>
+            <span>Hutridge Financial Demo Terminal</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/demo-account" className="rounded-md border border-white/15 px-4 py-2 text-sm font-bold">New Demo</Link>

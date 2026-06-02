@@ -6,7 +6,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeCheck, Clock3, LineChart, LockKeyhole, MonitorSmartphone, WalletCards } from "lucide-react";
 
 const balances = ["10,000", "25,000", "50,000", "100,000"];
-const platforms = ["ApexFX WebTrader", "MetaTrader 5", "Mobile Trading App"];
+const platforms = ["Hutridge Financial WebTrader", "MetaTrader 5", "Mobile Trading App"];
 
 type DemoForm = {
   firstName: string;
@@ -23,7 +23,7 @@ const initialForm: DemoForm = {
   lastName: "",
   email: "",
   country: "Nigeria",
-  platform: "ApexFX WebTrader",
+  platform: "Hutridge Financial WebTrader",
   balance: "50,000",
   experience: "Beginner",
 };
@@ -60,12 +60,12 @@ export default function DemoAccountPage() {
     if (Object.keys(nextErrors).length > 0) return;
 
     localStorage.setItem(
-      "apexfx-demo-account",
+      "hutridge-demo-account",
       JSON.stringify({
         ...form,
         login,
         password: `Apex-${seed}`,
-        server: "ApexFX-Demo",
+        server: "Hutridge Financial-Demo",
         equity: Number(form.balance.replaceAll(",", "")),
         createdAt: new Date().toISOString(),
       }),
@@ -79,7 +79,7 @@ export default function DemoAccountPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
-            Back to ApexFX Markets
+            Back to Hutridge Financial
           </Link>
           <span className="hidden items-center gap-2 rounded-md bg-white/10 px-3 py-2 text-sm font-semibold sm:inline-flex">
             <Clock3 className="size-4 text-gold" />
@@ -93,7 +93,7 @@ export default function DemoAccountPage() {
           <p className="section-kicker">Demo account</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">Practice trading with virtual funds</h1>
           <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
-            Create instant demo credentials, choose your virtual balance, and enter a simulated ApexFX trading terminal.
+            Create instant demo credentials, choose your virtual balance, and enter a simulated Hutridge Financial trading terminal.
           </p>
           <div className="mt-8 grid gap-4">
             <Feature icon={WalletCards} title="Virtual balance" body="Trade with up to $100,000 in simulated funds." />

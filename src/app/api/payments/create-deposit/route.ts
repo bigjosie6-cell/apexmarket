@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     {
       ok: true,
       mode: "manual_payment_details",
-      message: "Deposit request created. An ApexFX representative will provide payment details directly.",
+      message: "Deposit request created. An Hutridge Financial representative will provide payment details directly.",
       depositReference: `DEP-${Date.now()}`,
     },
     { status: 201 },

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const email = body.email?.trim();
   const firstName = body.firstName?.trim() || "Client";
   const lastName = body.lastName?.trim() || "";
-  const accountNumber = body.accountNumber?.trim() || `AFX-${Date.now().toString().slice(-6)}`;
+  const accountNumber = body.accountNumber?.trim() || `HF-${Date.now().toString().slice(-6)}`;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ ok: false, message: "A valid email address is required." }, { status: 400 });
@@ -42,9 +42,9 @@ export async function POST(request: Request) {
     <div style="margin:0;background:#f4f7fb;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#0A1F44;">
       <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #dbe4ef;border-radius:12px;overflow:hidden;">
         <div style="background:#0A1F44;padding:28px;color:#ffffff;">
-          <div style="display:inline-block;background:#ffffff;color:#D4AF37;font-weight:800;border-radius:8px;padding:10px 12px;margin-bottom:18px;">AX</div>
+          <div style="display:inline-block;background:#ffffff;color:#D4AF37;font-weight:800;border-radius:8px;padding:10px 12px;margin-bottom:18px;">HF</div>
           <h1 style="margin:0;font-size:28px;line-height:1.2;">Application received</h1>
-          <p style="margin:12px 0 0;color:#dbe7f5;line-height:1.6;">Your ApexFX Markets account application has been prepared successfully.</p>
+          <p style="margin:12px 0 0;color:#dbe7f5;line-height:1.6;">Your Hutridge Financial account application has been prepared successfully.</p>
         </div>
         <div style="padding:28px;">
           <p style="font-size:16px;line-height:1.7;margin:0 0 18px;">Hello ${safe.firstName},</p>
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   `;
 
   const text = [
-    "ApexFX Markets application received",
+    "Hutridge Financial application received",
     `Reference: ${accountNumber}`,
     `Name: ${firstName} ${lastName}`,
     `Email: ${email}`,
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
   const emailResult = await sendEmail({
     to: email,
-    subject: `ApexFX Markets application received - ${accountNumber}`,
+    subject: `Hutridge Financial application received - ${accountNumber}`,
     html,
     text,
   });

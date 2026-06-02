@@ -43,7 +43,7 @@ const campaigns = [
   },
 ];
 
-const donationSupportEmail = process.env.NEXT_PUBLIC_DONATION_SUPPORT_EMAIL ?? "donations@apexfxmarkets.com";
+const donationSupportEmail = process.env.NEXT_PUBLIC_DONATION_SUPPORT_EMAIL ?? "donations@hutridgefinancial.com";
 
 type ChatMessage = {
   from: "agent" | "donor";
@@ -61,7 +61,7 @@ export default function DonatePage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       from: "agent",
-      text: "Hello, welcome to ApexFX Gives. How much would you like to donate today?",
+      text: "Hello, welcome to Hutridge Financial Gives. How much would you like to donate today?",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -130,9 +130,9 @@ export default function DonatePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
-            Back to ApexFX Markets
+            Back to Hutridge Financial
           </Link>
-          <span className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold">ApexFX Gives</span>
+          <span className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold">Hutridge Financial Gives</span>
         </div>
       </section>
 
@@ -142,7 +142,7 @@ export default function DonatePage() {
             <p className="section-kicker">Community giving</p>
             <h1 className="mt-3 text-4xl font-bold leading-tight md:text-6xl">Support U.S. community campaigns</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-              ApexFX works with trusted community representatives who help route donations to designated people and verified local initiatives. This is not political fundraising.
+              Hutridge Financial works with trusted community representatives who help route donations to designated people and verified local initiatives. This is not political fundraising.
             </p>
           </div>
           <div className="rounded-lg bg-navy p-6 text-white shadow-xl">
@@ -175,7 +175,7 @@ export default function DonatePage() {
               <span className="grid size-12 place-items-center rounded-md bg-gold text-lg font-bold text-navy">AG</span>
               <div>
                 <p className="text-sm uppercase tracking-[0.22em] text-gold">Donation support agent</p>
-                <h2 className="text-2xl font-bold">ApexFX Giving Desk</h2>
+                <h2 className="text-2xl font-bold">Hutridge Financial Giving Desk</h2>
               </div>
             </div>
             <div className="mt-6 h-[360px] overflow-y-auto rounded-lg border border-white/10 bg-[#07111f] p-4">
@@ -190,7 +190,7 @@ export default function DonatePage() {
                     }`}
                   >
                     <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-70">
-                      {chat.from === "agent" ? "ApexFX Agent" : "Donor"}
+                      {chat.from === "agent" ? "Hutridge Financial Agent" : "Donor"}
                     </p>
                     {chat.text}
                   </div>

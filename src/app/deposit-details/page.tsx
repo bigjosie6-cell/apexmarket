@@ -77,7 +77,7 @@ function DepositDetailsContent() {
           <CheckCircle2 className="size-9 text-emerald-400" />
           <h1 className="mt-4 text-3xl font-bold">Deposit request prepared</h1>
           <p className="mt-3 text-slate-600 dark:text-slate-300">
-            Your selected payment method is ready. Use the details provided by the ApexFX payments desk and keep your reference visible.
+            Your selected payment method is ready. Use the details provided by the Hutridge Financial payments desk and keep your reference visible.
           </p>
 
           <div className="mt-6 divide-y divide-slate-200 overflow-hidden rounded-lg border border-slate-200 dark:divide-white/10 dark:border-white/10">

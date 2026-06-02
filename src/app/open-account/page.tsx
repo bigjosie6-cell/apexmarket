@@ -107,11 +107,11 @@ export default function OpenAccountPage() {
   const [submitStatus, setSubmitStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const [accountNumber, setAccountNumber] = useState("AFX-PENDING");
+  const [accountNumber, setAccountNumber] = useState("HF-PENDING");
 
   useEffect(() => {
     queueMicrotask(() => {
-      setAccountNumber(`AFX-${Date.now().toString().slice(-6)}`);
+      setAccountNumber(`HF-${Date.now().toString().slice(-6)}`);
     });
   }, []);
 
@@ -186,11 +186,11 @@ export default function OpenAccountPage() {
       });
       const result = await response.json();
       const savedApplication = { ...application, accountNumber: result.accountNumber ?? accountNumber };
-      localStorage.setItem("apexfx-application", JSON.stringify(savedApplication));
+      localStorage.setItem("hutridge-application", JSON.stringify(savedApplication));
       setSubmitStatus(result.message ?? "Application created.");
       router.push("/client-portal");
     } catch {
-      localStorage.setItem("apexfx-application", JSON.stringify(application));
+      localStorage.setItem("hutridge-application", JSON.stringify(application));
       setSubmitStatus("Application created, but the confirmation email could not be sent. Please contact support.");
       router.push("/client-portal");
     } finally {
@@ -204,7 +204,7 @@ export default function OpenAccountPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
-            Back to ApexFX Markets
+            Back to Hutridge Financial
           </Link>
           <div className="hidden items-center gap-3 text-sm font-semibold sm:flex">
             <LockKeyhole className="size-4 text-gold" />
@@ -218,7 +218,7 @@ export default function OpenAccountPage() {
           <p className="section-kicker">Account onboarding</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">Open a live trading account</h1>
           <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
-            Complete a secure application, choose your account tier, upload verification details, and enter the ApexFX client area.
+            Complete a secure application, choose your account tier, upload verification details, and enter the Hutridge Financial client area.
           </p>
 
           <div className="mt-8 rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
@@ -346,7 +346,7 @@ export default function OpenAccountPage() {
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
                   <WalletCards className="size-7 text-gold" />
                   <p className="mt-3 font-bold">Funding instruction preview</p>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After approval, ApexFX will show a secure cashier with transaction references, limits, and compliance checks.</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After approval, Hutridge Financial will show a secure cashier with transaction references, limits, and compliance checks.</p>
                 </div>
               </div>
             </section>
@@ -367,7 +367,7 @@ export default function OpenAccountPage() {
                   I understand that forex and CFD trading involves significant risk and I may lose more than my initial investment.
                 </CheckBox>
                 <CheckBox checked={form.acceptTerms} onChange={(value) => update("acceptTerms", value)} error={errors.acceptTerms}>
-                  I accept the ApexFX Markets client agreement, privacy policy, KYC policy, AML policy, and risk disclosure.
+                  I accept the Hutridge Financial client agreement, privacy policy, KYC policy, AML policy, and risk disclosure.
                 </CheckBox>
               </div>
             </section>

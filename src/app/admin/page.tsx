@@ -96,7 +96,7 @@ export default function AdminPage() {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <p className="section-kicker">Private admin</p>
-              <h1 className="mt-2 text-4xl font-bold">ApexFX Owner Console</h1>
+              <h1 className="mt-2 text-4xl font-bold">Hutridge Financial Owner Console</h1>
               <p className="mt-3 max-w-2xl text-slate-300">Only the configured owner ID and secret can access deposit approval tools.</p>
             </div>
             {signedIn ? (

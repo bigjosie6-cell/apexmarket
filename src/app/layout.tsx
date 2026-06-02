@@ -14,14 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ApexFX Markets | Institutional Forex and CFD Trading",
+  title: "Hutridge Financial | Institutional Forex and CFD Trading",
   description:
-    "Trade forex, commodities, indices, stocks, and crypto CFDs with ApexFX Markets institutional-grade trading technology.",
+    "Trade forex, commodities, indices, stocks, and crypto CFDs with Hutridge Financial institutional-grade trading technology.",
   keywords: [
     "forex brokerage",
     "CFD trading",
     "MetaTrader 5",
-    "ApexFX Markets",
+    "Hutridge Financial",
     "institutional trading",
   ],
 };
@@ -42,7 +42,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const savedTheme = localStorage.getItem("apexfx-theme");
+                const savedTheme = localStorage.getItem("hutridge-theme");
                 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
                 const theme = savedTheme || (prefersDark ? "dark" : "light");
                 document.documentElement.classList.toggle("dark", theme === "dark");

@@ -16,7 +16,10 @@ const resendEndpoint = "https://api.resend.com/emails";
 
 export async function sendEmail({ to, subject, html, text, replyTo }: SendEmailParams): Promise<SendEmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "ApexFX Markets <onboarding@resend.dev>";
+  const from = (process.env.EMAIL_FROM ?? "Hutridge Financial <onboarding@resend.dev>").replace(
+    "ApexFX Markets",
+    "Hutridge Financial",
+  );
 
   if (!apiKey) {
     return {

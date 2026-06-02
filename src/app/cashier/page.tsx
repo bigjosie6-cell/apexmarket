@@ -18,7 +18,7 @@ export default function CashierPage() {
   const [amount, setAmount] = useState("1000");
   const [currency, setCurrency] = useState("USD");
   const [email, setEmail] = useState("client@example.com");
-  const [status, setStatus] = useState("Create a request and an ApexFX representative will provide payment details directly.");
+  const [status, setStatus] = useState("Create a request and an Hutridge Financial representative will provide payment details directly.");
   const [loading, setLoading] = useState(false);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -28,7 +28,7 @@ export default function CashierPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        accountNumber: "AFX-LIVE-PENDING",
+        accountNumber: "HF-LIVE-PENDING",
         amount,
         currency,
         method,
@@ -70,7 +70,7 @@ export default function CashierPage() {
           <p className="section-kicker">Secure cashier</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">Deposit funds to your trading account</h1>
           <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
-            Submit a deposit request and the ApexFX payments desk will provide the correct payment details directly for your selected method.
+            Submit a deposit request and the Hutridge Financial payments desk will provide the correct payment details directly for your selected method.
           </p>
           <div className="mt-8 rounded-lg border border-gold/30 bg-gold/10 p-5 text-slate-700 dark:text-slate-100">
             <MessageCircle className="size-7 text-gold" />

@@ -11,7 +11,7 @@ const supportCards = [
   ["Security", "Admin access, account protection, suspicious activity, and privacy.", ShieldCheck],
 ];
 
-const donationSupportEmail = process.env.NEXT_PUBLIC_DONATION_SUPPORT_EMAIL ?? "donations@apexfxmarkets.com";
+const donationSupportEmail = process.env.NEXT_PUBLIC_DONATION_SUPPORT_EMAIL ?? "donations@hutridgefinancial.com";
 
 export default function SupportPage() {
   const [status, setStatus] = useState("Tell us what you need and our support desk will prepare a ticket.");
@@ -47,7 +47,7 @@ export default function SupportPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
-            Back to ApexFX Markets
+            Back to Hutridge Financial
           </Link>
           <span className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold">24/5 Support Desk</span>
         </div>
@@ -59,7 +59,7 @@ export default function SupportPage() {
             <p className="section-kicker">Customer support</p>
             <h1 className="mt-3 text-4xl font-bold leading-tight md:text-6xl">Beautiful support for trading, giving, and account help</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-              Get help from ApexFX support for brokerage onboarding, demo accounts, deposits, donation pledges, and trusted representative routing.
+              Get help from Hutridge Financial support for brokerage onboarding, demo accounts, deposits, donation pledges, and trusted representative routing.
             </p>
           </div>
           <div className="rounded-lg bg-navy p-6 text-white shadow-xl">
@@ -88,7 +88,7 @@ export default function SupportPage() {
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
               <Mail className="size-7 text-gold" />
-              <h2 className="mt-3 text-xl font-bold">support@apexfxmarkets.com</h2>
+              <h2 className="mt-3 text-xl font-bold">support@hutridgefinancial.com</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Use your ticket reference when following up.</p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
