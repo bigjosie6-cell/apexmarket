@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Inbox, LockKeyhole, Plus, ShieldCheck, TicketCheck, Trash2, UsersRound, WalletCards } from "lucide-react";
+import { Inbox, LockKeyhole, Mail, Plus, ShieldCheck, TicketCheck, Trash2, UsersRound, WalletCards } from "lucide-react";
 
 const paymentMethods = ["Bank Transfer", "Debit/Credit Card", "Mobile Money", "Crypto USDT"];
 
@@ -80,6 +80,9 @@ export default function AdminPage() {
   const [receivingAddress, setReceivingAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Bank Transfer");
   const [paymentInstructions, setPaymentInstructions] = useState("");
+  const [emailTo, setEmailTo] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
   const [applications, setApplications] = useState<AdminApplication[]>([]);
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
@@ -218,6 +221,35 @@ export default function AdminPage() {
     }
   };
 
+  const sendClientEmail = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage("Sending client email...");
+
+    try {
+      const response = await fetch("/api/admin/send-email", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...adminHeaders,
+        },
+        body: JSON.stringify({
+          to: emailTo,
+          subject: emailSubject,
+          message: emailBody,
+        }),
+      });
+      const result = await response.json();
+      setMessage(result.message ?? (response.ok ? "Email sent." : "Email could not be sent."));
+      if (response.ok) {
+        setEmailSubject("");
+        setEmailBody("");
+      }
+    } catch {
+      setMessage("Email could not be sent. Check your connection and try again.");
+    }
+  };
+
   const approveDeposit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const response = await fetch(`/api/admin/deposits/${depositId}/approve`, {
@@ -325,6 +357,35 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr]">
+          <form onSubmit={sendClientEmail} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+            <Mail className="size-8 text-gold" />
+            <h2 className="mt-4 text-2xl font-bold">Send Client Email</h2>
+            <p className="mt-2 text-sm text-slate-300">Send a direct Hutridge Financial email to any user from the owner console.</p>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <label className="grid gap-2 text-sm font-semibold">
+                Recipient email
+                <input className="form-field" type="email" value={emailTo} onChange={(event) => setEmailTo(event.target.value)} placeholder="client@example.com" disabled={!signedIn} />
+              </label>
+              <label className="grid gap-2 text-sm font-semibold">
+                Subject
+                <input className="form-field" value={emailSubject} onChange={(event) => setEmailSubject(event.target.value)} placeholder="Account update from Hutridge Financial" disabled={!signedIn} />
+              </label>
+            </div>
+            <label className="mt-4 grid gap-2 text-sm font-semibold">
+              Message
+              <textarea
+                className="form-field min-h-36"
+                value={emailBody}
+                onChange={(event) => setEmailBody(event.target.value)}
+                placeholder="Write the message you want the client to receive..."
+                disabled={!signedIn}
+              />
+            </label>
+            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
+              Send Email
+            </button>
+          </form>
+
           <section className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
