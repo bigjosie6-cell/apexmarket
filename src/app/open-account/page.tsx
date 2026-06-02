@@ -104,6 +104,8 @@ export default function OpenAccountPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitStatus, setSubmitStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const [accountNumber, setAccountNumber] = useState("AFX-PENDING");
 
@@ -163,9 +165,11 @@ export default function OpenAccountPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateStep()) return;
+    setSubmitting(true);
+    setSubmitStatus("Creating account application and sending confirmation email...");
 
     const application = {
       ...form,
@@ -174,8 +178,24 @@ export default function OpenAccountPage() {
       submittedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem("apexfx-application", JSON.stringify(application));
-    router.push("/client-portal");
+    try {
+      const response = await fetch("/api/account-applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(application),
+      });
+      const result = await response.json();
+      const savedApplication = { ...application, accountNumber: result.accountNumber ?? accountNumber };
+      localStorage.setItem("apexfx-application", JSON.stringify(savedApplication));
+      setSubmitStatus(result.message ?? "Application created.");
+      router.push("/client-portal");
+    } catch {
+      localStorage.setItem("apexfx-application", JSON.stringify(application));
+      setSubmitStatus("Application created, but the confirmation email could not be sent. Please contact support.");
+      router.push("/client-portal");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -362,11 +382,14 @@ export default function OpenAccountPage() {
                 Continue <ArrowRight className="size-4" />
               </button>
             ) : (
-              <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy">
-                Submit Application <ShieldCheck className="size-4" />
+              <button disabled={submitting} type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
+                {submitting ? "Sending Email..." : "Submit Application"} <ShieldCheck className="size-4" />
               </button>
             )}
           </div>
+          {submitStatus ? (
+            <p className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">{submitStatus}</p>
+          ) : null}
         </form>
       </section>
     </main>
