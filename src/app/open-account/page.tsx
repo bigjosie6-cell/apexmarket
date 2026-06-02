@@ -99,6 +99,18 @@ const steps = [
 
 const verificationDelayMs = 50000;
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const localApplicationListKey = "hutridge-applications";
+
+function saveLocalApplication(application: FormState & { accountNumber: string; status: string; submittedAt: string }) {
+  try {
+    const saved = window.localStorage.getItem(localApplicationListKey);
+    const applications = saved ? (JSON.parse(saved) as Array<typeof application>) : [];
+    const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)].slice(0, 100);
+    window.localStorage.setItem(localApplicationListKey, JSON.stringify(next));
+  } catch {
+    // The primary current-session profile is still saved separately.
+  }
+}
 
 export default function OpenAccountPage() {
   const router = useRouter();
@@ -192,10 +204,12 @@ export default function OpenAccountPage() {
       const result = await response.json();
       const savedApplication = { ...application, accountNumber: result.accountNumber ?? accountNumber };
       localStorage.setItem("hutridge-application", JSON.stringify(savedApplication));
+      saveLocalApplication(savedApplication);
       setSubmitStatus(result.message ?? "Application created.");
       router.push("/client-portal");
     } catch {
       localStorage.setItem("hutridge-application", JSON.stringify(application));
+      saveLocalApplication(application);
       setSubmitStatus("Application created, but the confirmation email could not be sent. Please contact support.");
       router.push("/client-portal");
     } finally {

@@ -56,11 +56,26 @@ type Holding = {
 };
 
 const localTicketKey = "hutridge-support-tickets";
+const localApplicationListKey = "hutridge-applications";
 
 function getLocalSupportTickets(): AdminTicket[] {
   try {
     const saved = window.localStorage.getItem(localTicketKey);
     return saved ? (JSON.parse(saved) as AdminTicket[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function getLocalApplications(): AdminApplication[] {
+  try {
+    const saved = window.localStorage.getItem(localApplicationListKey);
+    const applications = saved ? (JSON.parse(saved) as AdminApplication[]) : [];
+    const current = window.localStorage.getItem("hutridge-application");
+    if (!current) return applications;
+
+    const currentApplication = JSON.parse(current) as AdminApplication;
+    return [currentApplication, ...applications.filter((item) => item.accountNumber !== currentApplication.accountNumber)];
   } catch {
     return [];
   }
@@ -125,7 +140,12 @@ export default function AdminPage() {
       ]);
       const applicationsResult = await applicationsResponse.json();
       const ticketsResult = await ticketsResponse.json();
-      setApplications(applicationsResult.applications ?? []);
+      const serverApplications = (applicationsResult.applications ?? []) as AdminApplication[];
+      const localApplications = getLocalApplications();
+      const mergedApplications = [...localApplications, ...serverApplications].filter((application, index, all) => (
+        all.findIndex((item) => item.accountNumber === application.accountNumber) === index
+      ));
+      setApplications(mergedApplications);
       const serverTickets = (ticketsResult.tickets ?? []) as AdminTicket[];
       const localTickets = getLocalSupportTickets();
       const mergedTickets = [...localTickets, ...serverTickets].filter((ticket, index, all) => (

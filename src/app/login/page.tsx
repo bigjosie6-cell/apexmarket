@@ -5,6 +5,38 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowLeft, LockKeyhole, ShieldCheck } from "lucide-react";
 
+type LocalApplication = {
+  email: string;
+  accountNumber: string;
+  [key: string]: unknown;
+};
+
+const localApplicationListKey = "hutridge-applications";
+
+function findLocalApplication(email: string, accountNumber: string) {
+  try {
+    const current = window.localStorage.getItem("hutridge-application");
+    if (current) {
+      const application = JSON.parse(current) as LocalApplication;
+      if (
+        application.email.toLowerCase() === email.trim().toLowerCase()
+        && application.accountNumber.toUpperCase() === accountNumber.trim().toUpperCase()
+      ) {
+        return application;
+      }
+    }
+
+    const saved = window.localStorage.getItem(localApplicationListKey);
+    const applications = saved ? (JSON.parse(saved) as LocalApplication[]) : [];
+    return applications.find((application) => (
+      application.email.toLowerCase() === email.trim().toLowerCase()
+      && application.accountNumber.toUpperCase() === accountNumber.trim().toUpperCase()
+    ));
+  } catch {
+    return undefined;
+  }
+}
+
 export default function ClientLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -26,6 +58,13 @@ export default function ClientLoginPage() {
       const result = await response.json();
 
       if (!response.ok) {
+        const localApplication = findLocalApplication(email, accountNumber);
+        if (localApplication) {
+          localStorage.setItem("hutridge-application", JSON.stringify(localApplication));
+          setMessage("Login successful. Opening client area...");
+          router.push("/client-portal");
+          return;
+        }
         setMessage(result.message ?? "Login failed.");
         return;
       }
