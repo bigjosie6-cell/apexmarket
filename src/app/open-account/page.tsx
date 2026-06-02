@@ -9,10 +9,8 @@ import {
   BadgeCheck,
   BriefcaseBusiness,
   Check,
-  FileCheck2,
   LockKeyhole,
   ShieldCheck,
-  Upload,
   UserRoundPlus,
   WalletCards,
 } from "lucide-react";
@@ -95,7 +93,7 @@ const initialForm: FormState = {
 const steps = [
   { title: "Profile", icon: UserRoundPlus },
   { title: "Suitability", icon: BriefcaseBusiness },
-  { title: "Verification", icon: FileCheck2 },
+  { title: "Funding", icon: WalletCards },
   { title: "Review", icon: ShieldCheck },
 ];
 
@@ -138,15 +136,10 @@ export default function OpenAccountPage() {
       if (form.phone.replace(/\D/g, "").length < 7) nextErrors.phone = "Enter a valid phone number.";
     }
 
-    if (step === 1) {
+    if (step === 2) {
       if (!form.expectedDeposit || Number(form.expectedDeposit) < 100) {
         nextErrors.expectedDeposit = "Minimum expected deposit is $100.";
       }
-    }
-
-    if (step === 2) {
-      if (!form.idDocument) nextErrors.idDocument = "Add an identity document file name.";
-      if (!form.addressProof) nextErrors.addressProof = "Add a proof of address file name.";
     }
 
     if (step === 3) {
@@ -331,9 +324,6 @@ export default function OpenAccountPage() {
                     {["Capital growth", "Speculation", "Hedging", "Portfolio diversification"].map((item) => <option key={item}>{item}</option>)}
                   </select>
                 </Field>
-                <Field label="Expected first deposit" error={errors.expectedDeposit}>
-                  <input className="form-field" value={form.expectedDeposit} onChange={(event) => update("expectedDeposit", event.target.value)} type="number" min="100" />
-                </Field>
                 <Field label="Base currency">
                   <select className="form-field" value={form.baseCurrency} onChange={(event) => update("baseCurrency", event.target.value)}>
                     {["USD", "EUR", "GBP", "NGN"].map((item) => <option key={item}>{item}</option>)}
@@ -345,20 +335,26 @@ export default function OpenAccountPage() {
 
           {step === 2 && (
             <section>
-              <h2 className="text-2xl font-bold">Verification and funding</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">This demo simulates file upload by saving file names. Real production would connect to KYC and document storage providers.</p>
+              <h2 className="text-2xl font-bold">Funding method</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Choose how you want to fund the account. Payment instructions are shown after the account is created.</p>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <UploadBox label="Government ID" value={form.idDocument} error={errors.idDocument} onChange={(value) => update("idDocument", value)} />
-                <UploadBox label="Proof of address" value={form.addressProof} error={errors.addressProof} onChange={(value) => update("addressProof", value)} />
                 <Field label="Funding method">
                   <select className="form-field" value={form.fundingMethod} onChange={(event) => update("fundingMethod", event.target.value)}>
                     {fundingMethods.map((item) => <option key={item}>{item}</option>)}
                   </select>
                 </Field>
+                <Field label="Expected first deposit" error={errors.expectedDeposit}>
+                  <input className="form-field" value={form.expectedDeposit} onChange={(event) => update("expectedDeposit", event.target.value)} type="number" min="100" />
+                </Field>
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
                   <WalletCards className="size-7 text-gold" />
                   <p className="mt-3 font-bold">Funding instruction preview</p>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After submission, Hutridge Financial will show a secure cashier with transaction references, limits, and funding details.</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After submission, Hutridge Financial will show a secure cashier with transaction references, limits, and funding details for {form.fundingMethod}.</p>
+                </div>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
+                  <ShieldCheck className="size-7 text-gold" />
+                  <p className="mt-3 font-bold">Account review</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Your funding preference is reviewed before the client area opens.</p>
                 </div>
               </div>
             </section>
@@ -372,14 +368,14 @@ export default function OpenAccountPage() {
                 <ReviewCard title="Applicant" rows={[`${form.firstName} ${form.lastName}`, form.email, form.phone, form.country]} />
                 <ReviewCard title="Account" rows={[`${form.accountType} Account`, `Base currency: ${form.baseCurrency}`, `Expected deposit: $${form.expectedDeposit}`, form.fundingMethod]} />
                 <ReviewCard title="Suitability" rows={[form.experience, form.employment, form.annualIncome, form.tradingGoal]} />
-                <ReviewCard title="Documents" rows={[form.idDocument, form.addressProof, "KYC status: Verified"]} />
+                <ReviewCard title="Funding" rows={[`Method: ${form.fundingMethod}`, `Amount: ${form.baseCurrency} ${form.expectedDeposit}`, "Funding details shown after approval"]} />
               </div>
               <div className="mt-6 grid gap-3">
                 <CheckBox checked={form.acceptRisk} onChange={(value) => update("acceptRisk", value)} error={errors.acceptRisk}>
                   I understand that forex and CFD trading involves significant risk and I may lose more than my initial investment.
                 </CheckBox>
                 <CheckBox checked={form.acceptTerms} onChange={(value) => update("acceptTerms", value)} error={errors.acceptTerms}>
-                  I accept the Hutridge Financial client agreement, privacy policy, KYC policy, AML policy, and risk disclosure.
+                  I accept the Hutridge Financial client agreement, privacy policy, AML policy, and risk disclosure.
                 </CheckBox>
               </div>
             </section>
@@ -413,20 +409,6 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     <label className="grid gap-2 text-sm font-semibold">
       {label}
       {children}
-      {error ? <span className="text-xs font-semibold text-rose-500">{error}</span> : null}
-    </label>
-  );
-}
-
-function UploadBox({ label, value, error, onChange }: { label: string; value: string; error?: string; onChange: (value: string) => void }) {
-  return (
-    <label className="grid gap-2 text-sm font-semibold">
-      {label}
-      <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 dark:border-white/20 dark:bg-white/5">
-        <Upload className="size-7 text-gold" />
-        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">Enter a file name to simulate a secure upload.</p>
-        <input className="form-field mt-4" value={value} onChange={(event) => onChange(event.target.value)} placeholder={`${label.toLowerCase().replaceAll(" ", "-")}.pdf`} />
-      </div>
       {error ? <span className="text-xs font-semibold text-rose-500">{error}</span> : null}
     </label>
   );
