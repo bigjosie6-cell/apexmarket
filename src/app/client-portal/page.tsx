@@ -74,8 +74,9 @@ const defaultHoldings: Holding[] = [
   { name: "S&P 500", symbol: "S&P500", category: "Stocks", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
   { name: "S&P 500 / XRP Basket", symbol: "S&P500/XRP", category: "Investment", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
   { name: "S&P 500 / American Bitcoin Corp Basket", symbol: "S&P500/$ABTC", category: "Investment", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "SPCX", symbol: "SPCX", category: "Stock", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
   { name: "SpaceX IPO Allocation", symbol: "SPACEXIPO", category: "Private Market", value: 0, returnValue: "Pending", status: "Reserved", allocation: 0 },
-  { name: "TRUMP COIN", symbol: "TRUMP", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "TRUMP COIN", symbol: "$TRUMP", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
   { name: "Diversified Crypto Basket", symbol: "CRYPTO-ALL", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
 ];
 
