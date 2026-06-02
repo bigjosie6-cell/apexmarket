@@ -19,6 +19,30 @@ type ChatMessage = {
   text: string;
 };
 
+type SavedSupportTicket = {
+  ticketId: string;
+  fullName: string;
+  email: string;
+  category: string;
+  priority: string;
+  message: string;
+  status: string;
+  createdAt: string;
+};
+
+const localTicketKey = "hutridge-support-tickets";
+
+function saveLocalTicket(ticket: SavedSupportTicket) {
+  try {
+    const saved = window.localStorage.getItem(localTicketKey);
+    const tickets = saved ? (JSON.parse(saved) as SavedSupportTicket[]) : [];
+    const next = [ticket, ...tickets.filter((item) => item.ticketId !== ticket.ticketId)].slice(0, 100);
+    window.localStorage.setItem(localTicketKey, JSON.stringify(next));
+  } catch {
+    // Server tickets still handle the primary path.
+  }
+}
+
 export default function SupportPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -45,6 +69,18 @@ export default function SupportPage() {
     const trimmedMessage = body.trim();
     if (!trimmedMessage) return;
 
+    if (!fullName.trim() || !email.trim()) {
+      setMessages((current) => [
+        ...current,
+        {
+          id: Date.now(),
+          sender: "agent",
+          text: "Please enter your full name and email address before sending so I can create the support ticket.",
+        },
+      ]);
+      return;
+    }
+
     setMessages((current) => [
       ...current,
       { id: Date.now(), sender: "user", text: trimmedMessage },
@@ -66,6 +102,19 @@ export default function SupportPage() {
         }),
       });
       const result = await response.json();
+
+      if (result.ticketId) {
+        saveLocalTicket({
+          ticketId: result.ticketId,
+          fullName: fullName.trim(),
+          email: email.trim(),
+          category,
+          priority,
+          message: trimmedMessage,
+          status: "Open",
+          createdAt: new Date().toISOString(),
+        });
+      }
 
       setMessages((current) => [
         ...current,

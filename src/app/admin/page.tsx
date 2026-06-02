@@ -52,6 +52,17 @@ type Holding = {
   allocation: number;
 };
 
+const localTicketKey = "hutridge-support-tickets";
+
+function getLocalSupportTickets(): AdminTicket[] {
+  try {
+    const saved = window.localStorage.getItem(localTicketKey);
+    return saved ? (JSON.parse(saved) as AdminTicket[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 const defaultHolding: Holding = {
   name: "New Holding",
   symbol: "SYMBOL",
@@ -109,7 +120,12 @@ export default function AdminPage() {
       const applicationsResult = await applicationsResponse.json();
       const ticketsResult = await ticketsResponse.json();
       setApplications(applicationsResult.applications ?? []);
-      setTickets(ticketsResult.tickets ?? []);
+      const serverTickets = (ticketsResult.tickets ?? []) as AdminTicket[];
+      const localTickets = getLocalSupportTickets();
+      const mergedTickets = [...localTickets, ...serverTickets].filter((ticket, index, all) => (
+        all.findIndex((item) => item.ticketId === ticket.ticketId) === index
+      ));
+      setTickets(mergedTickets);
       setMessage("Admin inbox loaded.");
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
