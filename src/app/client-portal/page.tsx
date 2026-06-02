@@ -13,7 +13,9 @@ import {
   Landmark,
   LineChart,
   LockKeyhole,
+  PieChart,
   ShieldCheck,
+  TrendingUp,
   WalletCards,
 } from "lucide-react";
 
@@ -51,6 +53,20 @@ const watchlist = [
   ["XAU/USD", "2358.92", "+0.41%"],
   ["BTC/USD", "68,448", "+1.16%"],
 ];
+
+const holdings = [
+  { name: "Bitcoin", symbol: "BTC", category: "Crypto", value: 12500, returnValue: "+8.4%", status: "Active", allocation: 20 },
+  { name: "Ethereum", symbol: "ETH", category: "Crypto", value: 7200, returnValue: "+5.1%", status: "Active", allocation: 12 },
+  { name: "Gold Strategy", symbol: "XAU", category: "Investment", value: 20000, returnValue: "+3.6%", status: "Active", allocation: 31 },
+  { name: "US Equity Basket", symbol: "EQ-US", category: "Stocks", value: 15000, returnValue: "+6.2%", status: "Active", allocation: 23 },
+  { name: "American Bitcoin Corp", symbol: "$ABTC", category: "Stock", value: 4200, returnValue: "+4.8%", status: "Active", allocation: 6 },
+  { name: "Tesla", symbol: "$TESLA", category: "Stock", value: 3600, returnValue: "+2.9%", status: "Active", allocation: 5 },
+  { name: "SpaceX IPO Allocation", symbol: "SPACEXIPO", category: "Private Market", value: 1500, returnValue: "Pending", status: "Reserved", allocation: 2 },
+  { name: "TRUMP COIN", symbol: "TRUMP", category: "Crypto", value: 850, returnValue: "+1.7%", status: "Active", allocation: 1 },
+  { name: "Diversified Crypto Basket", symbol: "CRYPTO-ALL", category: "Crypto", value: 1200, returnValue: "+3.3%", status: "Active", allocation: 2 },
+];
+
+const totalHoldings = holdings.reduce((total, holding) => total + holding.value, 0);
 
 export default function ClientPortalPage() {
   const [application, setApplication] = useState<Application>(fallback);
@@ -151,6 +167,52 @@ export default function ClientPortalPage() {
             <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
+                  <h2 className="flex items-center gap-2 text-xl font-bold"><PieChart className="size-6 text-gold" /> Holdings</h2>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Assets owned and investments held under this client profile.</p>
+                </div>
+                <div className="rounded-md bg-navy px-4 py-3 text-white dark:bg-gold dark:text-navy">
+                  <p className="text-xs uppercase tracking-[0.18em] opacity-75">Portfolio Value</p>
+                  <p className="text-2xl font-bold">${totalHoldings.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-4">
+                <HoldingStat label="Crypto Exposure" value="$21,750" note="BTC, ETH, TRUMP, basket" />
+                <HoldingStat label="Public Equities" value="$22,800" note="$TESLA, $ABTC, US basket" />
+                <HoldingStat label="Alternatives" value="$21,500" note="Gold and private market" />
+                <HoldingStat label="Weighted Return" value="+5.1%" note="Indicative portfolio return" />
+              </div>
+
+              <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 dark:border-white/10">
+                <div className="hidden grid-cols-[1.3fr_0.7fr_0.8fr_0.8fr_0.7fr_0.7fr] gap-3 bg-slate-100 px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] text-slate-500 dark:bg-white/10 dark:text-slate-300 md:grid">
+                  <span>Asset</span>
+                  <span>Symbol</span>
+                  <span>Category</span>
+                  <span>Value</span>
+                  <span>Return</span>
+                  <span>Status</span>
+                </div>
+                {holdings.map((holding) => (
+                  <div key={holding.symbol} className="grid gap-3 border-t border-slate-200 px-4 py-4 text-sm first:border-t-0 dark:border-white/10 md:grid-cols-[1.3fr_0.7fr_0.8fr_0.8fr_0.7fr_0.7fr] md:items-center">
+                    <div>
+                      <p className="font-bold">{holding.name}</p>
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
+                        <span className="block h-full rounded-full bg-gold" style={{ width: `${Math.min(holding.allocation, 100)}%` }} />
+                      </div>
+                    </div>
+                    <strong>{holding.symbol}</strong>
+                    <span className="text-slate-600 dark:text-slate-300">{holding.category}</span>
+                    <span className="font-bold">${holding.value.toLocaleString()}</span>
+                    <span className={holding.returnValue.startsWith("+") ? "font-bold text-emerald-500" : "font-bold text-gold"}>{holding.returnValue}</span>
+                    <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">{holding.status}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                <div>
                   <h2 className="text-xl font-bold">Funding instruction preview</h2>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Your selected method is {application.fundingMethod}. Final cashier details unlock after verification approval.</p>
                 </div>
@@ -221,6 +283,17 @@ function Metric({ icon: Icon, label, value }: { icon: React.ElementType; label: 
       <Icon className="size-6 text-gold" />
       <p className="mt-4 text-sm text-slate-500 dark:text-slate-300">{label}</p>
       <p className="mt-1 text-2xl font-bold">{value}</p>
+    </article>
+  );
+}
+
+function HoldingStat({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <article className="rounded-md border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#07111f]">
+      <TrendingUp className="size-5 text-gold" />
+      <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">{label}</p>
+      <p className="mt-1 text-xl font-bold">{value}</p>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{note}</p>
     </article>
   );
 }
