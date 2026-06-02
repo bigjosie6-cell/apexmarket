@@ -1,9 +1,33 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
+import { Inbox, LockKeyhole, ShieldCheck, TicketCheck, UsersRound, WalletCards } from "lucide-react";
 
 const paymentMethods = ["Bank Transfer", "Debit/Credit Card", "Mobile Money", "Crypto USDT"];
+
+type AdminApplication = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  accountType: string;
+  expectedDeposit: string;
+  fundingMethod: string;
+  accountNumber: string;
+  submittedAt: string;
+  emailSent: boolean;
+};
+
+type AdminTicket = {
+  ticketId: string;
+  fullName: string;
+  email: string;
+  category: string;
+  priority: string;
+  message: string;
+  status: string;
+  createdAt: string;
+};
 
 export default function AdminPage() {
   const [adminId, setAdminId] = useState("");
@@ -12,6 +36,8 @@ export default function AdminPage() {
   const [receivingAddress, setReceivingAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Bank Transfer");
   const [paymentInstructions, setPaymentInstructions] = useState("");
+  const [applications, setApplications] = useState<AdminApplication[]>([]);
+  const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
 
@@ -25,6 +51,32 @@ export default function AdminPage() {
     const result = await response.json();
     setMessage(result.message);
     setSignedIn(response.ok);
+    if (response.ok) {
+      loadAdminInbox();
+    }
+  };
+
+  const adminHeaders = {
+    "x-admin-id": adminId,
+    "x-admin-role": "SUPER_ADMIN",
+    "x-admin-secret": secret,
+  };
+
+  const loadAdminInbox = async () => {
+    setMessage("Loading admin inbox...");
+    try {
+      const [applicationsResponse, ticketsResponse] = await Promise.all([
+        fetch("/api/admin/applications", { headers: adminHeaders, credentials: "include" }),
+        fetch("/api/admin/support-tickets", { headers: adminHeaders, credentials: "include" }),
+      ]);
+      const applicationsResult = await applicationsResponse.json();
+      const ticketsResult = await ticketsResponse.json();
+      setApplications(applicationsResult.applications ?? []);
+      setTickets(ticketsResult.tickets ?? []);
+      setMessage("Admin inbox loaded.");
+    } catch {
+      setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
+    }
   };
 
   const saveDonationAddress = async (event: FormEvent<HTMLFormElement>) => {
@@ -141,6 +193,65 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr]">
+          <section className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <Inbox className="size-8 text-gold" />
+                <h2 className="mt-4 text-2xl font-bold">Admin Inbox</h2>
+                <p className="mt-2 text-sm text-slate-300">View recent signups and support tickets submitted through the website.</p>
+              </div>
+              <button type="button" onClick={loadAdminInbox} disabled={!signedIn} className="rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
+                Refresh Inbox
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              <div className="rounded-lg border border-white/10 bg-[#07111f] p-5">
+                <h3 className="flex items-center gap-2 text-xl font-bold"><UsersRound className="size-5 text-gold" /> Signups ({applications.length})</h3>
+                <div className="mt-4 grid max-h-96 gap-3 overflow-y-auto pr-1">
+                  {applications.length ? applications.map((application) => (
+                    <article key={application.accountNumber} className="rounded-md border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-bold">{application.firstName} {application.lastName}</p>
+                          <p className="text-sm text-slate-300">{application.email}</p>
+                        </div>
+                        <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-200">{application.emailSent ? "Email sent" : "No email"}</span>
+                      </div>
+                      <div className="mt-3 grid gap-1 text-sm text-slate-300">
+                        <p>Reference: <strong className="text-white">{application.accountNumber}</strong></p>
+                        <p>{application.country} · {application.accountType} · ${application.expectedDeposit}</p>
+                        <p>Funding: {application.fundingMethod}</p>
+                      </div>
+                    </article>
+                  )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No signups saved yet.</p>}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-[#07111f] p-5">
+                <h3 className="flex items-center gap-2 text-xl font-bold"><TicketCheck className="size-5 text-gold" /> Support Tickets ({tickets.length})</h3>
+                <div className="mt-4 grid max-h-96 gap-3 overflow-y-auto pr-1">
+                  {tickets.length ? tickets.map((ticket) => (
+                    <article key={ticket.ticketId} className="rounded-md border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-bold">{ticket.fullName}</p>
+                          <p className="text-sm text-slate-300">{ticket.email}</p>
+                        </div>
+                        <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{ticket.priority}</span>
+                      </div>
+                      <div className="mt-3 grid gap-1 text-sm text-slate-300">
+                        <p>Ticket: <strong className="text-white">{ticket.ticketId}</strong></p>
+                        <p>{ticket.category} · {ticket.status}</p>
+                        <p className="line-clamp-3">{ticket.message}</p>
+                      </div>
+                    </article>
+                  )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No support tickets saved yet.</p>}
+                </div>
+              </div>
+            </div>
+          </section>
+
           <form onSubmit={savePaymentDetails} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
             <WalletCards className="size-8 text-gold" />
             <h2 className="mt-4 text-2xl font-bold">Deposit Payment Details</h2>

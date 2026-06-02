@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { saveSupportTicket } from "@/lib/support-tickets";
 
 type SupportTicketRequest = {
   fullName?: string;
@@ -22,9 +23,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Enter a valid email address." }, { status: 400 });
   }
 
+  const ticket = {
+    ticketId: `SUP-${Date.now().toString().slice(-6)}`,
+    fullName: body.fullName.trim(),
+    email: body.email.trim(),
+    category: body.category ?? "General",
+    priority: body.priority ?? "Normal",
+    message: body.message.trim(),
+    status: "Open",
+    createdAt: new Date().toISOString(),
+  };
+
+  await saveSupportTicket(ticket);
+
   return NextResponse.json({
     ok: true,
-    ticketId: `SUP-${Date.now().toString().slice(-6)}`,
+    ticketId: ticket.ticketId,
     message: "Support ticket created. A representative will follow up shortly.",
   });
 }

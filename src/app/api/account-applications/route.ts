@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import { saveApplication } from "@/lib/applications";
 
 type AccountApplicationRequest = {
   firstName?: string;
@@ -84,6 +85,44 @@ export async function POST(request: Request) {
     html,
     text,
   });
+
+  await saveApplication({
+    firstName,
+    lastName,
+    email,
+    phone: body.phone ?? "",
+    country: body.country ?? "United States",
+    accountType: body.accountType ?? "Standard",
+    baseCurrency: body.baseCurrency ?? "USD",
+    expectedDeposit: body.expectedDeposit ?? "1000",
+    fundingMethod: body.fundingMethod ?? "Bank Transfer",
+    accountNumber,
+    status: "Verified",
+    submittedAt: new Date().toISOString(),
+    emailSent: emailResult.sent,
+  });
+
+  const notifyEmail = process.env.ADMIN_NOTIFY_EMAIL;
+  if (notifyEmail) {
+    await sendEmail({
+      to: notifyEmail,
+      subject: `New Hutridge signup - ${accountNumber}`,
+      html: `
+        <div style="font-family:Arial,Helvetica,sans-serif;color:#0A1F44;">
+          <h2>New account application</h2>
+          <p><strong>Reference:</strong> ${safe.accountNumber}</p>
+          <p><strong>Name:</strong> ${safe.firstName} ${safe.lastName}</p>
+          <p><strong>Email:</strong> ${safe.email}</p>
+          <p><strong>Phone:</strong> ${safe.phone}</p>
+          <p><strong>Country:</strong> ${safe.country}</p>
+          <p><strong>Account:</strong> ${safe.accountType}</p>
+          <p><strong>Expected deposit:</strong> ${safe.baseCurrency} ${safe.expectedDeposit}</p>
+          <p><strong>Funding method:</strong> ${safe.fundingMethod}</p>
+        </div>
+      `,
+      text: `New account application\nReference: ${accountNumber}\nName: ${firstName} ${lastName}\nEmail: ${email}`,
+    });
+  }
 
   return NextResponse.json({
     ok: true,
