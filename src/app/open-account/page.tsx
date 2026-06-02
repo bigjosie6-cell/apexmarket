@@ -99,6 +99,9 @@ const steps = [
   { title: "Review", icon: ShieldCheck },
 ];
 
+const verificationDelayMs = 50000;
+const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 export default function OpenAccountPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -106,6 +109,7 @@ export default function OpenAccountPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [verifyingStep, setVerifyingStep] = useState(false);
 
   const [accountNumber, setAccountNumber] = useState("HF-PENDING");
 
@@ -154,13 +158,19 @@ export default function OpenAccountPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const next = () => {
+  const next = async () => {
     if (!validateStep()) return;
+    setVerifyingStep(true);
+    setSubmitStatus(`${steps[step].title} review in progress. Please wait 50 seconds while Hutridge Financial verifies this section.`);
+    await wait(verificationDelayMs);
     setStep((current) => Math.min(current + 1, steps.length - 1));
+    setSubmitStatus("");
+    setVerifyingStep(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const back = () => {
+    if (verifyingStep || submitting) return;
     setStep((current) => Math.max(current - 1, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -169,6 +179,8 @@ export default function OpenAccountPage() {
     event.preventDefault();
     if (!validateStep()) return;
     setSubmitting(true);
+    setSubmitStatus("Final compliance verification in progress. Please wait 50 seconds while the account is reviewed.");
+    await wait(verificationDelayMs);
     setSubmitStatus("Creating account application and sending confirmation email...");
 
     const application = {
@@ -374,16 +386,16 @@ export default function OpenAccountPage() {
           )}
 
           <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-white/10 sm:flex-row sm:justify-between">
-            <button type="button" onClick={back} disabled={step === 0} className="rounded-md border border-slate-300 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/20">
+            <button type="button" onClick={back} disabled={step === 0 || verifyingStep || submitting} className="rounded-md border border-slate-300 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/20">
               Back
             </button>
             {step < steps.length - 1 ? (
-              <button type="button" onClick={next} className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy">
-                Continue <ArrowRight className="size-4" />
+              <button type="button" onClick={next} disabled={verifyingStep} className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
+                {verifyingStep ? "Verifying - 50 seconds..." : "Continue"} <ArrowRight className="size-4" />
               </button>
             ) : (
               <button disabled={submitting} type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
-                {submitting ? "Sending Email..." : "Submit Application"} <ShieldCheck className="size-4" />
+                {submitting ? "Final Verification..." : "Submit Application"} <ShieldCheck className="size-4" />
               </button>
             )}
           </div>
