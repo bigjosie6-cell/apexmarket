@@ -120,7 +120,7 @@ export default function DemoAccountPage() {
               <input className="form-field" value={form.lastName} onChange={(event) => update("lastName", event.target.value)} placeholder="Trader" />
             </Field>
             <Field label="Email address" error={errors.email}>
-              <input className="form-field" value={form.email} onChange={(event) => update("email", event.target.value)} placeholder="nosa@example.com" type="email" />
+              <input className="form-field" value={form.email} onChange={(event) => update("email", event.target.value)} placeholder="client@example.com" type="email" />
             </Field>
             <Field label="Country">
               <select className="form-field" value={form.country} onChange={(event) => update("country", event.target.value)}>
