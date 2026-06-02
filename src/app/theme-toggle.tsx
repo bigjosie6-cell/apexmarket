@@ -8,7 +8,7 @@ type Theme = "light" | "dark";
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
 
-  const savedTheme = window.localStorage.getItem("apexfx-theme");
+  const savedTheme = window.localStorage.getItem("hutridge-theme");
   if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
 
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -21,7 +21,7 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem("apexfx-theme", theme);
+    window.localStorage.setItem("hutridge-theme", theme);
   }, [theme]);
 
   const nextTheme = theme === "dark" ? "light" : "dark";
