@@ -29,6 +29,19 @@ type AdminTicket = {
   createdAt: string;
 };
 
+type AdminDeposit = {
+  depositReference: string;
+  accountNumber: string;
+  email: string;
+  amount: number;
+  currency: string;
+  method: string;
+  status: "Pending" | "Approved" | "Rejected";
+  createdAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
+};
+
 type Holding = {
   name: string;
   symbol: string;
@@ -58,6 +71,7 @@ export default function AdminPage() {
   const [paymentInstructions, setPaymentInstructions] = useState("");
   const [applications, setApplications] = useState<AdminApplication[]>([]);
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
+  const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
@@ -74,6 +88,7 @@ export default function AdminPage() {
     setSignedIn(response.ok);
     if (response.ok) {
       loadAdminInbox();
+      loadDeposits();
       loadPortfolio();
     }
   };
@@ -98,6 +113,18 @@ export default function AdminPage() {
       setMessage("Admin inbox loaded.");
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
+    }
+  };
+
+  const loadDeposits = async () => {
+    setMessage("Loading deposit requests...");
+    try {
+      const response = await fetch("/api/admin/deposits", { headers: adminHeaders, credentials: "include" });
+      const result = await response.json();
+      setDeposits(result.deposits ?? []);
+      setMessage("Deposit requests loaded.");
+    } catch {
+      setMessage("Could not load deposit requests.");
     }
   };
 
@@ -179,9 +206,25 @@ export default function AdminPage() {
     event.preventDefault();
     const response = await fetch(`/api/admin/deposits/${depositId}/approve`, {
       method: "POST",
+      credentials: "include",
+      headers: adminHeaders,
     });
     const result = await response.json();
-    setMessage(result.message ?? `Deposit ${result.depositId} approved.`);
+    setMessage(result.message ?? `Deposit ${depositId} approved.`);
+    loadDeposits();
+  };
+
+  const approveDepositByReference = async (reference: string) => {
+    setDepositId(reference);
+    setMessage(`Approving ${reference}...`);
+    const response = await fetch(`/api/admin/deposits/${reference}/approve`, {
+      method: "POST",
+      credentials: "include",
+      headers: adminHeaders,
+    });
+    const result = await response.json();
+    setMessage(result.message ?? `Deposit ${reference} approved.`);
+    loadDeposits();
   };
 
   const savePaymentDetails = async (event: FormEvent<HTMLFormElement>) => {
@@ -421,13 +464,62 @@ export default function AdminPage() {
             </button>
           </form>
 
+          <section className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <WalletCards className="size-8 text-gold" />
+                <h2 className="mt-4 text-2xl font-bold">Deposit Requests</h2>
+                <p className="mt-2 text-sm text-slate-300">Review every cashier deposit request and approve it from the owner console.</p>
+              </div>
+              <button type="button" onClick={loadDeposits} disabled={!signedIn} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
+                Refresh Deposits
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-3">
+              {deposits.length ? deposits.map((deposit) => (
+                <article key={deposit.depositReference} className="rounded-lg border border-white/10 bg-[#07111f] p-4">
+                  <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">{deposit.depositReference}</p>
+                      <h3 className="mt-2 text-xl font-bold">{deposit.currency} {deposit.amount.toLocaleString()} via {deposit.method}</h3>
+                      <p className="mt-1 text-sm text-slate-300">{deposit.email} · Account {deposit.accountNumber}</p>
+                    </div>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${deposit.status === "Approved" ? "bg-emerald-400/15 text-emerald-200" : "bg-gold/15 text-gold"}`}>
+                        {deposit.status}
+                      </span>
+                      {deposit.status === "Pending" ? (
+                        <button
+                          type="button"
+                          onClick={() => approveDepositByReference(deposit.depositReference)}
+                          disabled={!signedIn}
+                          className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                  {deposit.approvedAt ? (
+                    <p className="mt-3 text-xs text-slate-400">Approved by {deposit.approvedBy} on {new Date(deposit.approvedAt).toLocaleString()}</p>
+                  ) : (
+                    <p className="mt-3 text-xs text-slate-400">Created {new Date(deposit.createdAt).toLocaleString()}</p>
+                  )}
+                </article>
+              )) : (
+                <p className="rounded-md border border-white/10 bg-[#07111f] p-4 text-sm text-slate-300">No deposit requests yet. When a user creates one from the cashier page, it will appear here.</p>
+              )}
+            </div>
+          </section>
+
           <form onSubmit={approveDeposit} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
             <WalletCards className="size-8 text-gold" />
-            <h2 className="mt-4 text-2xl font-bold">Approve Deposit</h2>
-            <p className="mt-2 text-sm text-slate-300">This calls the owner-protected approval API. Database wiring is still required before real approvals work.</p>
+            <h2 className="mt-4 text-2xl font-bold">Manual Deposit Approval</h2>
+            <p className="mt-2 text-sm text-slate-300">Paste a deposit reference if you want to approve a request manually.</p>
             <label className="mt-5 grid gap-2 text-sm font-semibold">
-              Deposit ID
-              <input className="form-field" value={depositId} onChange={(event) => setDepositId(event.target.value)} placeholder="deposit-id" disabled={!signedIn} />
+              Deposit reference
+              <input className="form-field" value={depositId} onChange={(event) => setDepositId(event.target.value)} placeholder="DEP-1780351191132" disabled={!signedIn} />
             </label>
             <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
               Approve Deposit

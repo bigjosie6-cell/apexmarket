@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { saveManualDeposit } from "@/lib/manual-deposits";
 
 type DepositRequest = {
   amount?: string;
@@ -19,12 +20,25 @@ export async function POST(request: Request) {
     );
   }
 
+  const depositReference = `DEP-${Date.now()}`;
+
+  await saveManualDeposit({
+    depositReference,
+    accountNumber: body.accountNumber,
+    email: body.email,
+    amount,
+    currency: body.currency,
+    method: body.method,
+    status: "Pending",
+    createdAt: new Date().toISOString(),
+  });
+
   return NextResponse.json(
     {
       ok: true,
       mode: "manual_payment_details",
       message: "Deposit request created. An Hutridge Financial representative will provide payment details directly.",
-      depositReference: `DEP-${Date.now()}`,
+      depositReference,
     },
     { status: 201 },
   );
