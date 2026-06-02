@@ -54,7 +54,17 @@ const watchlist = [
   ["BTC/USD", "68,448", "+1.16%"],
 ];
 
-const holdings = [
+type Holding = {
+  name: string;
+  symbol: string;
+  category: string;
+  value: number;
+  returnValue: string;
+  status: string;
+  allocation: number;
+};
+
+const defaultHoldings: Holding[] = [
   { name: "Bitcoin", symbol: "BTC", category: "Crypto", value: 12500, returnValue: "+8.4%", status: "Active", allocation: 20 },
   { name: "Ethereum", symbol: "ETH", category: "Crypto", value: 7200, returnValue: "+5.1%", status: "Active", allocation: 12 },
   { name: "Gold Strategy", symbol: "XAU", category: "Investment", value: 20000, returnValue: "+3.6%", status: "Active", allocation: 31 },
@@ -66,17 +76,35 @@ const holdings = [
   { name: "Diversified Crypto Basket", symbol: "CRYPTO-ALL", category: "Crypto", value: 1200, returnValue: "+3.3%", status: "Active", allocation: 2 },
 ];
 
-const totalHoldings = holdings.reduce((total, holding) => total + holding.value, 0);
-
 export default function ClientPortalPage() {
   const [application, setApplication] = useState<Application>(fallback);
+  const [holdings, setHoldings] = useState<Holding[]>(defaultHoldings);
 
   useEffect(() => {
     queueMicrotask(() => {
       const saved = localStorage.getItem("hutridge-application");
       if (saved) setApplication(JSON.parse(saved));
     });
+
+    const loadPortfolio = async () => {
+      try {
+        const response = await fetch("/api/portfolio");
+        const result = await response.json();
+        if (result.portfolio?.holdings?.length) {
+          setHoldings(result.portfolio.holdings);
+        }
+      } catch {
+        setHoldings(defaultHoldings);
+      }
+    };
+
+    loadPortfolio();
   }, []);
+
+  const totalHoldings = holdings.reduce((total, holding) => total + holding.value, 0);
+  const cryptoValue = holdings.filter((holding) => holding.category.toLowerCase().includes("crypto")).reduce((total, holding) => total + holding.value, 0);
+  const equitiesValue = holdings.filter((holding) => ["stock", "stocks"].includes(holding.category.toLowerCase())).reduce((total, holding) => total + holding.value, 0);
+  const alternativesValue = Math.max(totalHoldings - cryptoValue - equitiesValue, 0);
 
   const submitted = new Intl.DateTimeFormat("en", {
     dateStyle: "medium",
@@ -177,9 +205,9 @@ export default function ClientPortalPage() {
               </div>
 
               <div className="mt-5 grid gap-3 md:grid-cols-4">
-                <HoldingStat label="Crypto Exposure" value="$21,750" note="BTC, ETH, TRUMP, basket" />
-                <HoldingStat label="Public Equities" value="$22,800" note="$TESLA, $ABTC, US basket" />
-                <HoldingStat label="Alternatives" value="$21,500" note="Gold and private market" />
+                <HoldingStat label="Crypto Exposure" value={`$${cryptoValue.toLocaleString()}`} note="Digital asset holdings" />
+                <HoldingStat label="Public Equities" value={`$${equitiesValue.toLocaleString()}`} note="Stocks and equity baskets" />
+                <HoldingStat label="Alternatives" value={`$${alternativesValue.toLocaleString()}`} note="Gold and private market" />
                 <HoldingStat label="Weighted Return" value="+5.1%" note="Indicative portfolio return" />
               </div>
 

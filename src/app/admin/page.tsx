@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Inbox, LockKeyhole, ShieldCheck, TicketCheck, UsersRound, WalletCards } from "lucide-react";
+import { Inbox, LockKeyhole, Plus, ShieldCheck, TicketCheck, Trash2, UsersRound, WalletCards } from "lucide-react";
 
 const paymentMethods = ["Bank Transfer", "Debit/Credit Card", "Mobile Money", "Crypto USDT"];
 
@@ -29,6 +29,26 @@ type AdminTicket = {
   createdAt: string;
 };
 
+type Holding = {
+  name: string;
+  symbol: string;
+  category: string;
+  value: number;
+  returnValue: string;
+  status: string;
+  allocation: number;
+};
+
+const defaultHolding: Holding = {
+  name: "New Holding",
+  symbol: "SYMBOL",
+  category: "Crypto",
+  value: 0,
+  returnValue: "+0.0%",
+  status: "Active",
+  allocation: 1,
+};
+
 export default function AdminPage() {
   const [adminId, setAdminId] = useState("");
   const [secret, setSecret] = useState("");
@@ -38,6 +58,7 @@ export default function AdminPage() {
   const [paymentInstructions, setPaymentInstructions] = useState("");
   const [applications, setApplications] = useState<AdminApplication[]>([]);
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
+  const [holdings, setHoldings] = useState<Holding[]>([]);
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
 
@@ -53,6 +74,7 @@ export default function AdminPage() {
     setSignedIn(response.ok);
     if (response.ok) {
       loadAdminInbox();
+      loadPortfolio();
     }
   };
 
@@ -76,6 +98,57 @@ export default function AdminPage() {
       setMessage("Admin inbox loaded.");
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
+    }
+  };
+
+  const loadPortfolio = async () => {
+    setMessage("Loading portfolio holdings...");
+    try {
+      const response = await fetch("/api/admin/portfolio", { headers: adminHeaders, credentials: "include" });
+      const result = await response.json();
+      setHoldings(result.portfolio?.holdings ?? []);
+      setMessage("Portfolio holdings loaded.");
+    } catch {
+      setMessage("Could not load portfolio holdings.");
+    }
+  };
+
+  const updateHolding = (index: number, key: keyof Holding, value: string) => {
+    setHoldings((current) => current.map((holding, holdingIndex) => {
+      if (holdingIndex !== index) return holding;
+      return {
+        ...holding,
+        [key]: key === "value" || key === "allocation" ? Number(value) : value,
+      };
+    }));
+  };
+
+  const addHolding = () => {
+    setHoldings((current) => [...current, { ...defaultHolding }]);
+  };
+
+  const removeHolding = (index: number) => {
+    setHoldings((current) => current.filter((_, holdingIndex) => holdingIndex !== index));
+  };
+
+  const savePortfolio = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage("Saving portfolio holdings...");
+
+    try {
+      const response = await fetch("/api/admin/portfolio", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...adminHeaders,
+        },
+        body: JSON.stringify({ holdings }),
+      });
+      const result = await response.json();
+      setMessage(result.message ?? (response.ok ? "Portfolio holdings saved." : "Portfolio holdings could not be saved."));
+    } catch {
+      setMessage("Portfolio holdings could not be saved.");
     }
   };
 
@@ -251,6 +324,77 @@ export default function AdminPage() {
               </div>
             </div>
           </section>
+
+          <form onSubmit={savePortfolio} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <WalletCards className="size-8 text-gold" />
+                <h2 className="mt-4 text-2xl font-bold">Client Holdings Editor</h2>
+                <p className="mt-2 text-sm text-slate-300">Update portfolio value, crypto holdings, stocks, and investment balances shown in the client portal.</p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button type="button" onClick={loadPortfolio} disabled={!signedIn} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
+                  Load Holdings
+                </button>
+                <button type="button" onClick={addHolding} disabled={!signedIn} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
+                  <Plus className="size-4" /> Add Holding
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4">
+              {holdings.length ? holdings.map((holding, index) => (
+                <article key={`${holding.symbol}-${index}`} className="rounded-lg border border-white/10 bg-[#07111f] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <strong>{holding.name || "Holding"} · {holding.symbol || "Symbol"}</strong>
+                    <button type="button" onClick={() => removeHolding(index)} disabled={!signedIn} className="rounded-md border border-rose-300/30 p-2 text-rose-200 disabled:cursor-not-allowed disabled:opacity-50" aria-label="Remove holding">
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                  <div className="mt-4 grid gap-3 md:grid-cols-3">
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Asset name
+                      <input className="form-field" value={holding.name} onChange={(event) => updateHolding(index, "name", event.target.value)} disabled={!signedIn} />
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Symbol
+                      <input className="form-field" value={holding.symbol} onChange={(event) => updateHolding(index, "symbol", event.target.value)} disabled={!signedIn} />
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Category
+                      <select className="form-field" value={holding.category} onChange={(event) => updateHolding(index, "category", event.target.value)} disabled={!signedIn}>
+                        {["Crypto", "Stock", "Stocks", "Investment", "Private Market", "Forex", "Fund"].map((category) => <option key={category}>{category}</option>)}
+                      </select>
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Balance / value
+                      <input className="form-field" type="number" min="0" step="0.01" value={holding.value} onChange={(event) => updateHolding(index, "value", event.target.value)} disabled={!signedIn} />
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Return
+                      <input className="form-field" value={holding.returnValue} onChange={(event) => updateHolding(index, "returnValue", event.target.value)} disabled={!signedIn} />
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold">
+                      Status
+                      <select className="form-field" value={holding.status} onChange={(event) => updateHolding(index, "status", event.target.value)} disabled={!signedIn}>
+                        {["Active", "Reserved", "Pending", "Matured", "Closed"].map((status) => <option key={status}>{status}</option>)}
+                      </select>
+                    </label>
+                    <label className="grid gap-2 text-sm font-semibold md:col-span-3">
+                      Allocation bar %
+                      <input className="form-field" type="number" min="0" max="100" value={holding.allocation} onChange={(event) => updateHolding(index, "allocation", event.target.value)} disabled={!signedIn} />
+                    </label>
+                  </div>
+                </article>
+              )) : (
+                <p className="rounded-md border border-white/10 bg-[#07111f] p-4 text-sm text-slate-300">Unlock admin, then click Load Holdings.</p>
+              )}
+            </div>
+
+            <button disabled={!signedIn || holdings.length === 0} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
+              Save Client Holdings
+            </button>
+          </form>
 
           <form onSubmit={savePaymentDetails} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
             <WalletCards className="size-8 text-gold" />
