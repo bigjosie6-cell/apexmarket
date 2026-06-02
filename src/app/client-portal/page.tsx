@@ -115,7 +115,7 @@ export default function ClientPortalPage() {
               <p className="section-kicker">Application received</p>
               <h1 className="mt-3 text-4xl font-bold">Welcome, {application.firstName}</h1>
               <p className="mt-3 max-w-2xl text-slate-300">
-                Your Hutridge Financial account application has been created and is queued for compliance review. This client area is now active for status tracking, funding preview, and platform access.
+                Your Hutridge Financial account is verified and active. Your client area is ready for funding, holdings review, and platform access.
               </p>
             </div>
             <div className="rounded-lg border border-white/15 bg-white/10 p-5">
@@ -214,7 +214,7 @@ export default function ClientPortalPage() {
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
                   <h2 className="text-xl font-bold">Funding instruction preview</h2>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Your selected method is {application.fundingMethod}. Final cashier details unlock after verification approval.</p>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Your selected method is {application.fundingMethod}. Cashier details are available now for verified clients.</p>
                 </div>
                 <button className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-bold text-navy">
                   Download Application <Download className="size-4" />
@@ -222,7 +222,7 @@ export default function ClientPortalPage() {
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <InfoBox icon={Landmark} title="Segregated accounts" body="Client money instructions are shown with unique payment references." />
-                <InfoBox icon={Clock3} title="Review window" body="Most complete applications are reviewed within one business day." />
+                <InfoBox icon={Clock3} title="Instant verification" body="This client profile has been verified and marked ready for funding." />
                 <InfoBox icon={Headphones} title="Support" body="A relationship team can help with documents, deposits, and platforms." />
               </div>
             </section>

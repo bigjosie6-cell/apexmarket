@@ -174,7 +174,7 @@ export default function OpenAccountPage() {
     const application = {
       ...form,
       accountNumber,
-      status: "Pending Verification",
+      status: "Verified",
       submittedAt: new Date().toISOString(),
     };
 
@@ -346,7 +346,7 @@ export default function OpenAccountPage() {
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
                   <WalletCards className="size-7 text-gold" />
                   <p className="mt-3 font-bold">Funding instruction preview</p>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After approval, Hutridge Financial will show a secure cashier with transaction references, limits, and compliance checks.</p>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After submission, Hutridge Financial will show a secure cashier with transaction references, limits, and funding details.</p>
                 </div>
               </div>
             </section>
@@ -360,7 +360,7 @@ export default function OpenAccountPage() {
                 <ReviewCard title="Applicant" rows={[`${form.firstName} ${form.lastName}`, form.email, form.phone, form.country]} />
                 <ReviewCard title="Account" rows={[`${form.accountType} Account`, `Base currency: ${form.baseCurrency}`, `Expected deposit: $${form.expectedDeposit}`, form.fundingMethod]} />
                 <ReviewCard title="Suitability" rows={[form.experience, form.employment, form.annualIncome, form.tradingGoal]} />
-                <ReviewCard title="Documents" rows={[form.idDocument, form.addressProof, "KYC status: Pending review"]} />
+                <ReviewCard title="Documents" rows={[form.idDocument, form.addressProof, "KYC status: Verified"]} />
               </div>
               <div className="mt-6 grid gap-3">
                 <CheckBox checked={form.acceptRisk} onChange={(value) => update("acceptRisk", value)} error={errors.acceptRisk}>
