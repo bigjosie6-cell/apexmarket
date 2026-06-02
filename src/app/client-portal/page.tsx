@@ -8,7 +8,6 @@ import {
   Bell,
   CircleDollarSign,
   Clock3,
-  Download,
   Headphones,
   Landmark,
   LineChart,
@@ -244,9 +243,6 @@ export default function ClientPortalPage() {
                   <h2 className="text-xl font-bold">Funding instruction preview</h2>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Your selected method is {application.fundingMethod}. Cashier details are available now for verified clients.</p>
                 </div>
-                <button className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-bold text-navy">
-                  Download Application <Download className="size-4" />
-                </button>
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <InfoBox icon={Landmark} title="Segregated accounts" body="Client money instructions are shown with unique payment references." />
