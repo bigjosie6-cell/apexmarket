@@ -65,15 +65,15 @@ type Holding = {
 };
 
 const defaultHoldings: Holding[] = [
-  { name: "Bitcoin", symbol: "BTC", category: "Crypto", value: 12500, returnValue: "+8.4%", status: "Active", allocation: 20 },
-  { name: "Ethereum", symbol: "ETH", category: "Crypto", value: 7200, returnValue: "+5.1%", status: "Active", allocation: 12 },
-  { name: "Gold Strategy", symbol: "XAU", category: "Investment", value: 20000, returnValue: "+3.6%", status: "Active", allocation: 31 },
-  { name: "US Equity Basket", symbol: "EQ-US", category: "Stocks", value: 15000, returnValue: "+6.2%", status: "Active", allocation: 23 },
-  { name: "American Bitcoin Corp", symbol: "$ABTC", category: "Stock", value: 4200, returnValue: "+4.8%", status: "Active", allocation: 6 },
-  { name: "Tesla", symbol: "$TESLA", category: "Stock", value: 3600, returnValue: "+2.9%", status: "Active", allocation: 5 },
-  { name: "SpaceX IPO Allocation", symbol: "SPACEXIPO", category: "Private Market", value: 1500, returnValue: "Pending", status: "Reserved", allocation: 2 },
-  { name: "TRUMP COIN", symbol: "TRUMP", category: "Crypto", value: 850, returnValue: "+1.7%", status: "Active", allocation: 1 },
-  { name: "Diversified Crypto Basket", symbol: "CRYPTO-ALL", category: "Crypto", value: 1200, returnValue: "+3.3%", status: "Active", allocation: 2 },
+  { name: "Bitcoin", symbol: "BTC", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "Ethereum", symbol: "ETH", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "Gold Strategy", symbol: "XAU", category: "Investment", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "US Equity Basket", symbol: "EQ-US", category: "Stocks", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "American Bitcoin Corp", symbol: "$ABTC", category: "Stock", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "Tesla", symbol: "$TESLA", category: "Stock", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "SpaceX IPO Allocation", symbol: "SPACEXIPO", category: "Private Market", value: 0, returnValue: "Pending", status: "Reserved", allocation: 0 },
+  { name: "TRUMP COIN", symbol: "TRUMP", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
+  { name: "Diversified Crypto Basket", symbol: "CRYPTO-ALL", category: "Crypto", value: 0, returnValue: "+0.0%", status: "Active", allocation: 0 },
 ];
 
 export default function ClientPortalPage() {
@@ -208,7 +208,7 @@ export default function ClientPortalPage() {
                 <HoldingStat label="Crypto Exposure" value={`$${cryptoValue.toLocaleString()}`} note="Digital asset holdings" />
                 <HoldingStat label="Public Equities" value={`$${equitiesValue.toLocaleString()}`} note="Stocks and equity baskets" />
                 <HoldingStat label="Alternatives" value={`$${alternativesValue.toLocaleString()}`} note="Gold and private market" />
-                <HoldingStat label="Weighted Return" value="+5.1%" note="Indicative portfolio return" />
+                <HoldingStat label="Weighted Return" value={totalHoldings > 0 ? "+5.1%" : "+0.0%"} note="Indicative portfolio return" />
               </div>
 
               <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 dark:border-white/10">
