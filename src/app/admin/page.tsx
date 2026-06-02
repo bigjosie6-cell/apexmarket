@@ -9,11 +9,14 @@ type AdminApplication = {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   country: string;
   accountType: string;
+  baseCurrency: string;
   expectedDeposit: string;
   fundingMethod: string;
   accountNumber: string;
+  status: string;
   submittedAt: string;
   emailSent: boolean;
 };
@@ -412,9 +415,13 @@ export default function AdminPage() {
                         <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-200">{application.emailSent ? "Email sent" : "No email"}</span>
                       </div>
                       <div className="mt-3 grid gap-1 text-sm text-slate-300">
-                        <p>Reference: <strong className="text-white">{application.accountNumber}</strong></p>
-                        <p>{application.country} · {application.accountType} · ${application.expectedDeposit}</p>
+                        <p>Login email: <strong className="text-white">{application.email}</strong></p>
+                        <p>Login reference: <strong className="text-white">{application.accountNumber}</strong></p>
+                        <p>Phone: <strong className="text-white">{application.phone || "Not provided"}</strong></p>
+                        <p>Country: {application.country} · Status: {application.status}</p>
+                        <p>Account: {application.accountType} · Deposit: {application.baseCurrency ?? "USD"} {application.expectedDeposit}</p>
                         <p>Funding: {application.fundingMethod}</p>
+                        <p>Submitted: {new Date(application.submittedAt).toLocaleString()}</p>
                       </div>
                     </article>
                   )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No signups saved yet.</p>}

@@ -40,6 +40,7 @@ const navItems = [
   "Gives",
   "Contact",
   "Support",
+  "Login",
 ];
 
 const navHref = (item: string) => {
@@ -47,6 +48,7 @@ const navHref = (item: string) => {
   if (item === "Gives") return "/donate";
   if (item === "Support") return "/support";
   if (item === "Contact") return "/support";
+  if (item === "Login") return "/login";
   return `#${item.toLowerCase().replaceAll(" ", "-")}`;
 };
 
@@ -333,6 +335,7 @@ export default function Home() {
             ))}
           </div>
           <div className="hidden items-center gap-3 lg:flex">
+            <a href="/login" className="px-3 py-2 text-sm font-semibold">Login</a>
             <a href="/open-account" className="px-3 py-2 text-sm font-semibold">Trade</a>
             <a href="/open-account" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy shadow-lg shadow-gold/20">Open Account</a>
           </div>
@@ -379,6 +382,13 @@ export default function Home() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Donate
+                </a>
+                <a
+                  href="/login"
+                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
                 </a>
                 <a
                   href="/open-account"
