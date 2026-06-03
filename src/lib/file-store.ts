@@ -3,8 +3,12 @@ import os from "node:os";
 import path from "node:path";
 
 const dataDir = process.env.VERCEL ? path.join(os.tmpdir(), "hutridge-data") : path.join(process.cwd(), ".data");
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL
+  ?? process.env.UPSTASH_REDIS_REST_REDIS_URL
+  ?? process.env.KV_REST_API_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+  ?? process.env.UPSTASH_REDIS_REST_REDIS_TOKEN
+  ?? process.env.KV_REST_API_TOKEN;
 
 type RedisResponse = {
   result?: unknown;
