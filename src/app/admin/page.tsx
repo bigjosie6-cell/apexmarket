@@ -67,6 +67,7 @@ type Holding = {
 
 const localTicketKey = "hutridge-support-tickets";
 const localApplicationListKey = "hutridge-applications";
+const localLoginActivityKey = "hutridge-login-activity";
 
 function portfolioStorageKey(accountNumber: string) {
   return `hutridge-portfolio:${accountNumber || "unselected"}`;
@@ -90,6 +91,15 @@ function getLocalApplications(): AdminApplication[] {
 
     const currentApplication = JSON.parse(current) as AdminApplication;
     return [currentApplication, ...applications.filter((item) => item.accountNumber !== currentApplication.accountNumber)];
+  } catch {
+    return [];
+  }
+}
+
+function getLocalLoginActivity(): AdminLoginActivity[] {
+  try {
+    const saved = window.localStorage.getItem(localLoginActivityKey);
+    return saved ? (JSON.parse(saved) as AdminLoginActivity[]) : [];
   } catch {
     return [];
   }
@@ -205,8 +215,12 @@ export default function AdminPage() {
       ));
       setTickets(mergedTickets);
       const serverLogins = (loginsResult.logins ?? []) as AdminLoginActivity[];
-      setLogins(serverLogins);
-      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups, ${serverLogins.length} logins, and ${mergedTickets.length} support tickets.`);
+      const localLogins = getLocalLoginActivity();
+      const mergedLogins = [...localLogins, ...serverLogins].filter((loginRecord, index, all) => (
+        all.findIndex((item) => item.id === loginRecord.id) === index
+      ));
+      setLogins(mergedLogins);
+      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups, ${mergedLogins.length} logins, and ${mergedTickets.length} support tickets.`);
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
     } finally {

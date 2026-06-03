@@ -8,10 +8,32 @@ import { ArrowLeft, LockKeyhole, ShieldCheck } from "lucide-react";
 type LocalApplication = {
   email: string;
   accountNumber: string;
+  firstName?: string;
+  lastName?: string;
   [key: string]: unknown;
 };
 
 const localApplicationListKey = "hutridge-applications";
+const localLoginActivityKey = "hutridge-login-activity";
+
+function saveLocalLoginActivity(application: LocalApplication) {
+  try {
+    const saved = window.localStorage.getItem(localLoginActivityKey);
+    const logins = saved ? (JSON.parse(saved) as unknown[]) : [];
+    const entry = {
+      id: `LOCAL-${Date.now().toString().slice(-8)}`,
+      email: application.email,
+      accountNumber: application.accountNumber,
+      firstName: application.firstName ?? "Client",
+      lastName: application.lastName ?? "",
+      status: "Successful",
+      createdAt: new Date().toISOString(),
+    };
+    window.localStorage.setItem(localLoginActivityKey, JSON.stringify([entry, ...logins].slice(0, 500)));
+  } catch {
+    // Server-side login activity remains the primary record.
+  }
+}
 
 function findLocalApplication(email: string, accountNumber: string) {
   try {
@@ -61,6 +83,7 @@ export default function ClientLoginPage() {
         const localApplication = findLocalApplication(email, accountNumber);
         if (localApplication) {
           localStorage.setItem("hutridge-application", JSON.stringify(localApplication));
+          saveLocalLoginActivity(localApplication);
           setMessage("Login successful. Opening client area...");
           router.push("/client-portal");
           return;
@@ -70,6 +93,7 @@ export default function ClientLoginPage() {
       }
 
       localStorage.setItem("hutridge-application", JSON.stringify(result.application));
+      saveLocalLoginActivity(result.application);
       setMessage("Login successful. Opening client area...");
       router.push("/client-portal");
     } catch {
