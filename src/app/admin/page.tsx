@@ -32,6 +32,16 @@ type AdminTicket = {
   createdAt: string;
 };
 
+type AdminLoginActivity = {
+  id: string;
+  email: string;
+  accountNumber: string;
+  firstName: string;
+  lastName: string;
+  status: string;
+  createdAt: string;
+};
+
 type AdminDeposit = {
   depositReference: string;
   accountNumber: string;
@@ -129,6 +139,7 @@ export default function AdminPage() {
   const [emailBody, setEmailBody] = useState("");
   const [applications, setApplications] = useState<AdminApplication[]>([]);
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
+  const [logins, setLogins] = useState<AdminLoginActivity[]>([]);
   const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [selectedAccountNumber, setSelectedAccountNumber] = useState("");
@@ -168,12 +179,14 @@ export default function AdminPage() {
     setBusyAction("inbox");
     setMessage("Loading admin inbox...");
     try {
-      const [applicationsResponse, ticketsResponse] = await Promise.all([
+      const [applicationsResponse, ticketsResponse, loginsResponse] = await Promise.all([
         fetch("/api/admin/applications", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
         fetch("/api/admin/support-tickets", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
+        fetch("/api/admin/login-activity", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
       ]);
       const applicationsResult = await applicationsResponse.json();
       const ticketsResult = await ticketsResponse.json();
+      const loginsResult = await loginsResponse.json();
       const serverApplications = (applicationsResult.applications ?? []) as AdminApplication[];
       const localApplications = getLocalApplications();
       const mergedApplications = [...localApplications, ...serverApplications].filter((application, index, all) => (
@@ -191,7 +204,9 @@ export default function AdminPage() {
         all.findIndex((item) => item.ticketId === ticket.ticketId) === index
       ));
       setTickets(mergedTickets);
-      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups and ${mergedTickets.length} support tickets.`);
+      const serverLogins = (loginsResult.logins ?? []) as AdminLoginActivity[];
+      setLogins(serverLogins);
+      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups, ${serverLogins.length} logins, and ${mergedTickets.length} support tickets.`);
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
     } finally {
@@ -564,6 +579,29 @@ export default function AdminPage() {
                     </article>
                   )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No support tickets saved yet.</p>}
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-lg border border-white/10 bg-[#07111f] p-5">
+              <h3 className="flex items-center gap-2 text-xl font-bold"><LockKeyhole className="size-5 text-gold" /> Client Logins ({logins.length})</h3>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Successful client portal access records</p>
+              <div className="mt-4 grid max-h-80 gap-3 overflow-y-auto pr-1 md:grid-cols-2">
+                {logins.length ? logins.map((loginRecord) => (
+                  <article key={loginRecord.id} className="rounded-md border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-bold">{loginRecord.firstName} {loginRecord.lastName}</p>
+                        <p className="text-sm text-slate-300">{loginRecord.email}</p>
+                      </div>
+                      <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-200">{loginRecord.status}</span>
+                    </div>
+                    <div className="mt-3 grid gap-1 text-sm text-slate-300">
+                      <p>Account: <strong className="text-white">{loginRecord.accountNumber}</strong></p>
+                      <p>Login ID: <strong className="text-white">{loginRecord.id}</strong></p>
+                      <p>Time: {new Date(loginRecord.createdAt).toLocaleString()}</p>
+                    </div>
+                  </article>
+                )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300 md:col-span-2">No client logins saved yet.</p>}
               </div>
             </div>
           </section>

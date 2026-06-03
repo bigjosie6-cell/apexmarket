@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { listApplications } from "@/lib/applications";
+import { saveLoginActivity } from "@/lib/login-activity";
 
 type ClientLoginRequest = {
   email?: string;
@@ -29,6 +30,13 @@ export async function POST(request: Request) {
       { status: 404 },
     );
   }
+
+  await saveLoginActivity({
+    email: application.email,
+    accountNumber: application.accountNumber,
+    firstName: application.firstName,
+    lastName: application.lastName,
+  });
 
   return NextResponse.json({
     ok: true,
