@@ -97,7 +97,7 @@ const steps = [
   { title: "Review", icon: ShieldCheck },
 ];
 
-const verificationDelayMs = 50000;
+const verificationDelayMs = 2000;
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const localApplicationListKey = "hutridge-applications";
 
@@ -166,7 +166,7 @@ export default function OpenAccountPage() {
   const next = async () => {
     if (!validateStep()) return;
     setVerifyingStep(true);
-    setSubmitStatus(`${steps[step].title} review in progress. Please wait 50 seconds while Hutridge Financial verifies this section.`);
+    setSubmitStatus(`Reviewing your ${steps[step].title.toLowerCase()} details...`);
     await wait(verificationDelayMs);
     setStep((current) => Math.min(current + 1, steps.length - 1));
     setSubmitStatus("");
@@ -184,7 +184,7 @@ export default function OpenAccountPage() {
     event.preventDefault();
     if (!validateStep()) return;
     setSubmitting(true);
-    setSubmitStatus("Final compliance verification in progress. Please wait 50 seconds while the account is reviewed.");
+    setSubmitStatus("Preparing your client profile...");
     await wait(verificationDelayMs);
     setSubmitStatus("Creating account application and sending confirmation email...");
 
@@ -401,11 +401,11 @@ export default function OpenAccountPage() {
             </button>
             {step < steps.length - 1 ? (
               <button type="button" onClick={next} disabled={verifyingStep} className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
-                {verifyingStep ? "Verifying - 50 seconds..." : "Continue"} <ArrowRight className="size-4" />
+                {verifyingStep ? "Processing..." : "Continue"} <ArrowRight className="size-4" />
               </button>
             ) : (
               <button disabled={submitting} type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
-                {submitting ? "Final Verification..." : "Submit Application"} <ShieldCheck className="size-4" />
+                {submitting ? "Processing..." : "Submit Application"} <ShieldCheck className="size-4" />
               </button>
             )}
           </div>
