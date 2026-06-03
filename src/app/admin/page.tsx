@@ -57,6 +57,7 @@ type Holding = {
 
 const localTicketKey = "hutridge-support-tickets";
 const localApplicationListKey = "hutridge-applications";
+const localPortfolioKey = "hutridge-portfolio";
 
 function getLocalSupportTickets(): AdminTicket[] {
   try {
@@ -76,6 +77,28 @@ function getLocalApplications(): AdminApplication[] {
 
     const currentApplication = JSON.parse(current) as AdminApplication;
     return [currentApplication, ...applications.filter((item) => item.accountNumber !== currentApplication.accountNumber)];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalPortfolio(holdings: Holding[]) {
+  try {
+    window.localStorage.setItem(localPortfolioKey, JSON.stringify({
+      holdings,
+      updatedAt: new Date().toISOString(),
+      updatedBy: "admin-browser",
+    }));
+  } catch {
+    // Server storage remains the primary path.
+  }
+}
+
+function getLocalPortfolioHoldings(): Holding[] {
+  try {
+    const saved = window.localStorage.getItem(localPortfolioKey);
+    const portfolio = saved ? (JSON.parse(saved) as { holdings?: Holding[] }) : null;
+    return portfolio?.holdings ?? [];
   } catch {
     return [];
   }
@@ -175,7 +198,9 @@ export default function AdminPage() {
     try {
       const response = await fetch("/api/admin/portfolio", { headers: adminHeaders, credentials: "include" });
       const result = await response.json();
-      setHoldings(result.portfolio?.holdings ?? []);
+      const serverHoldings = result.portfolio?.holdings ?? [];
+      const localHoldings = getLocalPortfolioHoldings();
+      setHoldings(localHoldings.length ? localHoldings : serverHoldings);
       setMessage("Portfolio holdings loaded.");
     } catch {
       setMessage("Could not load portfolio holdings.");
@@ -216,6 +241,11 @@ export default function AdminPage() {
       });
       const result = await response.json();
       setMessage(result.message ?? (response.ok ? "Portfolio holdings saved." : "Portfolio holdings could not be saved."));
+      if (response.ok) {
+        const savedHoldings = result.portfolio?.holdings ?? holdings;
+        setHoldings(savedHoldings);
+        saveLocalPortfolio(savedHoldings);
+      }
     } catch {
       setMessage("Portfolio holdings could not be saved.");
     }
