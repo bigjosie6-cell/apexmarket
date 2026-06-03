@@ -110,6 +110,14 @@ const marketRows = [
   ["BTC/USD", "68,420", "68,448", "+1.16%"],
 ];
 
+type MarketRow = [string, string, string, string];
+
+type MarketQuote = {
+  symbol: string;
+  price: string;
+  change: string;
+};
+
 const why = [
   { title: "Secure Funds", body: "Bank-grade security and segregated operating controls.", icon: ShieldCheck },
   { title: "Fast Execution", body: "Low latency infrastructure for volatile market conditions.", icon: Zap },
@@ -142,7 +150,30 @@ function Sparkline({ up = true }: { up?: boolean }) {
   );
 }
 
-function PlatformTerminal() {
+function makeLiveRows(quotes: MarketQuote[]): MarketRow[] {
+  if (!quotes.length) return marketRows as MarketRow[];
+
+  return quotes.map((quote) => {
+    const numericPrice = Number.parseFloat(quote.price.replaceAll(",", ""));
+    const spread = quote.symbol.includes("JPY") ? 0.018 : quote.symbol.includes("XAU") ? 0.48 : quote.symbol.includes("BTC") ? 28 : 0.00014;
+    const decimals = quote.price.includes(".") ? quote.price.split(".")[1]?.length ?? 2 : 0;
+    const bid = Number.isFinite(numericPrice) ? numericPrice - spread : 0;
+    const ask = Number.isFinite(numericPrice) ? numericPrice : 0;
+    const formatter = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
+    return [
+      quote.symbol,
+      Number.isFinite(bid) ? formatter.format(bid) : quote.price,
+      Number.isFinite(ask) ? formatter.format(ask) : quote.price,
+      quote.change,
+    ];
+  });
+}
+
+function PlatformTerminal({ rows = marketRows as MarketRow[] }: { rows?: MarketRow[] }) {
   return (
     <div className="rounded-lg border border-white/15 bg-[#081832]/90 p-4 shadow-2xl shadow-black/40">
       <div className="mb-4 flex items-center justify-between">
@@ -172,7 +203,7 @@ function PlatformTerminal() {
           </div>
         </div>
         <div className="grid gap-3">
-          {marketRows.slice(0, 4).map(([pair, bid, , change], index) => (
+          {rows.slice(0, 4).map(([pair, bid, , change], index) => (
             <div key={pair} className="rounded-md border border-white/10 bg-white/5 p-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-white">{pair}</span>
@@ -305,6 +336,10 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [marketQuotes, setMarketQuotes] = useState<MarketQuote[]>([]);
+  const [marketsLive, setMarketsLive] = useState(false);
+
+  const liveMarketRows = useMemo(() => makeLiveRows(marketQuotes), [marketQuotes]);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -316,6 +351,26 @@ export default function Home() {
       document.body.style.overflow = originalOverflow;
     };
   }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const loadMarketQuotes = async () => {
+      try {
+        const response = await fetch("/api/market-watch", { cache: "no-store" });
+        const result = await response.json();
+        if (Array.isArray(result.quotes) && result.quotes.length) {
+          setMarketQuotes(result.quotes);
+          setMarketsLive(Boolean(result.live));
+        }
+      } catch {
+        setMarketQuotes([]);
+        setMarketsLive(false);
+      }
+    };
+
+    loadMarketQuotes();
+    const interval = window.setInterval(loadMarketQuotes, 30000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   return (
     <main className="min-h-screen bg-white text-navy dark:bg-[#07111f] dark:text-white">
@@ -434,7 +489,7 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.1 }}>
-            <PlatformTerminal />
+            <PlatformTerminal rows={liveMarketRows} />
           </motion.div>
         </div>
       </section>
@@ -522,12 +577,16 @@ export default function Home() {
           <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="section-kicker">Market data</p>
-              <h2 className="section-title text-white">Simulated live pricing widgets</h2>
+              <h2 className="section-title text-white">Live market pricing widgets</h2>
             </div>
-            <p className="max-w-xl text-slate-300">Indicative prices for interface demonstration. Production deployments can connect these widgets to broker-approved feeds or TradingView embeds.</p>
+            <p className="max-w-xl text-slate-300">
+              {marketsLive
+                ? "Live market watch updates automatically from connected market data feeds."
+                : "Live market watch is refreshing. Fallback prices may display briefly if the feed is unavailable."}
+            </p>
           </div>
           <div className="overflow-hidden rounded-lg border border-white/15">
-            {marketRows.map(([pair, bid, ask, change], index) => (
+            {liveMarketRows.map(([pair, bid, ask, change], index) => (
               <div key={pair} className="grid grid-cols-2 items-center gap-4 border-b border-white/10 bg-white/[0.04] p-4 last:border-b-0 md:grid-cols-5">
                 <strong>{pair}</strong>
                 <span>Bid {bid}</span>

@@ -15,6 +15,7 @@ type YahooResponse = {
 const quoteMap = [
   { label: "EUR/USD", yahoo: "EURUSD=X", decimals: 5 },
   { label: "GBP/USD", yahoo: "GBPUSD=X", decimals: 5 },
+  { label: "USD/JPY", yahoo: "JPY=X", decimals: 3 },
   { label: "XAU/USD", yahoo: "GC=F", decimals: 2 },
   { label: "BTC/USD", yahoo: "BTC-USD", decimals: 0 },
 ];
@@ -22,6 +23,7 @@ const quoteMap = [
 const fallbackQuotes = [
   { symbol: "EUR/USD", price: "1.08756", change: "+0.18%", source: "fallback" },
   { symbol: "GBP/USD", price: "1.27436", change: "-0.07%", source: "fallback" },
+  { symbol: "USD/JPY", price: "156.301", change: "+0.24%", source: "fallback" },
   { symbol: "XAU/USD", price: "2358.92", change: "+0.41%", source: "fallback" },
   { symbol: "BTC/USD", price: "68,448", change: "+1.16%", source: "fallback" },
 ];
