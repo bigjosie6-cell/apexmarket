@@ -40,7 +40,6 @@ const navItems = [
   "Gives",
   "Contact",
   "Support",
-  "Login",
 ];
 
 const navHref = (item: string) => {
@@ -48,7 +47,6 @@ const navHref = (item: string) => {
   if (item === "Gives") return "/donate";
   if (item === "Support") return "/support";
   if (item === "Contact") return "/support";
-  if (item === "Login") return "/login";
   return `#${item.toLowerCase().replaceAll(" ", "-")}`;
 };
 
