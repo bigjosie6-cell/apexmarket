@@ -97,7 +97,8 @@ const steps = [
   { title: "Review", icon: ShieldCheck },
 ];
 
-const verificationDelayMs = 2000;
+const verificationDelayMs = 5000;
+const finalReviewDelayMs = 20000;
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const localApplicationListKey = "hutridge-applications";
 
@@ -185,7 +186,7 @@ export default function OpenAccountPage() {
     if (!validateStep()) return;
     setSubmitting(true);
     setSubmitStatus("Preparing your client profile...");
-    await wait(verificationDelayMs);
+    await wait(finalReviewDelayMs);
     setSubmitStatus("Creating account application and sending confirmation email...");
 
     const application = {
