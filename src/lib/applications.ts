@@ -17,20 +17,12 @@ export type AccountApplication = {
 };
 
 const fileName = "applications.json";
-const globalApplications = globalThis as typeof globalThis & {
-  hutridgeApplications?: AccountApplication[];
-};
-
 export async function listApplications() {
-  if (globalApplications.hutridgeApplications) return globalApplications.hutridgeApplications;
-  const applications = await readStore<AccountApplication[]>(fileName, []);
-  globalApplications.hutridgeApplications = applications;
-  return applications;
+  return readStore<AccountApplication[]>(fileName, []);
 }
 
 export async function saveApplication(application: AccountApplication) {
   const applications = await listApplications();
   const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)];
-  globalApplications.hutridgeApplications = next;
   return writeStore(fileName, next);
 }

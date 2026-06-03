@@ -132,22 +132,29 @@ export default function AdminPage() {
   const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [selectedAccountNumber, setSelectedAccountNumber] = useState("");
+  const [busyAction, setBusyAction] = useState("");
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
+  const isBusy = Boolean(busyAction);
 
   const login = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ adminId, secret }),
-    });
-    const result = await response.json();
-    setMessage(result.message);
-    setSignedIn(response.ok);
-    if (response.ok) {
-      loadAdminInbox();
-      loadDeposits();
+    setBusyAction("login");
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminId, secret }),
+      });
+      const result = await response.json();
+      setMessage(result.message);
+      setSignedIn(response.ok);
+      if (response.ok) {
+        loadAdminInbox();
+        loadDeposits();
+      }
+    } finally {
+      setBusyAction("");
     }
   };
 
@@ -158,11 +165,12 @@ export default function AdminPage() {
   };
 
   const loadAdminInbox = async () => {
+    setBusyAction("inbox");
     setMessage("Loading admin inbox...");
     try {
       const [applicationsResponse, ticketsResponse] = await Promise.all([
-        fetch("/api/admin/applications", { headers: adminHeaders, credentials: "include" }),
-        fetch("/api/admin/support-tickets", { headers: adminHeaders, credentials: "include" }),
+        fetch("/api/admin/applications", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
+        fetch("/api/admin/support-tickets", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
       ]);
       const applicationsResult = await applicationsResponse.json();
       const ticketsResult = await ticketsResponse.json();
@@ -183,21 +191,26 @@ export default function AdminPage() {
         all.findIndex((item) => item.ticketId === ticket.ticketId) === index
       ));
       setTickets(mergedTickets);
-      setMessage("Admin inbox loaded.");
+      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups and ${mergedTickets.length} support tickets.`);
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
+    } finally {
+      setBusyAction("");
     }
   };
 
   const loadDeposits = async () => {
+    setBusyAction("deposits");
     setMessage("Loading deposit requests...");
     try {
-      const response = await fetch("/api/admin/deposits", { headers: adminHeaders, credentials: "include" });
+      const response = await fetch("/api/admin/deposits", { headers: adminHeaders, credentials: "include", cache: "no-store" });
       const result = await response.json();
       setDeposits(result.deposits ?? []);
       setMessage("Deposit requests loaded.");
     } catch {
       setMessage("Could not load deposit requests.");
+    } finally {
+      setBusyAction("");
     }
   };
 
@@ -207,9 +220,10 @@ export default function AdminPage() {
       return;
     }
 
+    setBusyAction("portfolio-load");
     setMessage(`Loading portfolio holdings for ${accountNumber}...`);
     try {
-      const response = await fetch(`/api/admin/portfolio?accountNumber=${encodeURIComponent(accountNumber)}`, { headers: adminHeaders, credentials: "include" });
+      const response = await fetch(`/api/admin/portfolio?accountNumber=${encodeURIComponent(accountNumber)}`, { headers: adminHeaders, credentials: "include", cache: "no-store" });
       const result = await response.json();
       const serverHoldings = result.portfolio?.holdings ?? [];
       const localHoldings = getLocalPortfolioHoldings(accountNumber);
@@ -217,6 +231,8 @@ export default function AdminPage() {
       setMessage(`Portfolio holdings loaded for ${accountNumber}.`);
     } catch {
       setMessage("Could not load portfolio holdings.");
+    } finally {
+      setBusyAction("");
     }
   };
 
@@ -250,6 +266,7 @@ export default function AdminPage() {
       return;
     }
 
+    setBusyAction("portfolio-save");
     setMessage("Saving portfolio holdings...");
 
     try {
@@ -271,11 +288,14 @@ export default function AdminPage() {
       }
     } catch {
       setMessage("Portfolio holdings could not be saved.");
+    } finally {
+      setBusyAction("");
     }
   };
 
   const saveDonationAddress = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setBusyAction("donation");
     setMessage("Saving donation receiving address...");
 
     try {
@@ -294,11 +314,14 @@ export default function AdminPage() {
       setMessage(result.message ?? (response.ok ? "Donation receiving address saved." : "Donation address could not be saved."));
     } catch {
       setMessage("Donation address could not be saved. Check your connection and try again.");
+    } finally {
+      setBusyAction("");
     }
   };
 
   const sendClientEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setBusyAction("email");
     setMessage("Sending client email...");
 
     try {
@@ -323,11 +346,14 @@ export default function AdminPage() {
       }
     } catch {
       setMessage("Email could not be sent. Check your connection and try again.");
+    } finally {
+      setBusyAction("");
     }
   };
 
   const approveDeposit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setBusyAction("approve");
     const response = await fetch(`/api/admin/deposits/${depositId}/approve`, {
       method: "POST",
       credentials: "include",
@@ -335,11 +361,13 @@ export default function AdminPage() {
     });
     const result = await response.json();
     setMessage(result.message ?? `Deposit ${depositId} approved.`);
-    loadDeposits();
+    await loadDeposits();
+    setBusyAction("");
   };
 
   const approveDepositByReference = async (reference: string) => {
     setDepositId(reference);
+    setBusyAction(`approve-${reference}`);
     setMessage(`Approving ${reference}...`);
     const response = await fetch(`/api/admin/deposits/${reference}/approve`, {
       method: "POST",
@@ -348,11 +376,13 @@ export default function AdminPage() {
     });
     const result = await response.json();
     setMessage(result.message ?? `Deposit ${reference} approved.`);
-    loadDeposits();
+    await loadDeposits();
+    setBusyAction("");
   };
 
   const savePaymentDetails = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setBusyAction("payment");
     setMessage("Saving payment details...");
 
     try {
@@ -371,6 +401,8 @@ export default function AdminPage() {
       setMessage(result.message ?? (response.ok ? "Payment details saved." : "Payment details could not be saved."));
     } catch {
       setMessage("Payment details could not be saved. Check your connection and try again.");
+    } finally {
+      setBusyAction("");
     }
   };
 
@@ -409,7 +441,9 @@ export default function AdminPage() {
               Admin secret
               <input className="form-field" value={secret} onChange={(event) => setSecret(event.target.value)} placeholder="private secret" type="password" />
             </label>
-            <button className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy">Unlock Admin</button>
+            <button disabled={busyAction === "login"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-wait disabled:opacity-60">
+              {busyAction === "login" ? "Unlocking..." : "Unlock Admin"}
+            </button>
           </form>
 
           <form onSubmit={saveDonationAddress} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
@@ -426,8 +460,8 @@ export default function AdminPage() {
                 disabled={!signedIn}
               />
             </label>
-            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-              Save Donation Address
+            <button disabled={!signedIn || busyAction === "donation"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              {busyAction === "donation" ? "Saving Donation Address..." : "Save Donation Address"}
             </button>
           </form>
         </div>
@@ -457,8 +491,8 @@ export default function AdminPage() {
                 disabled={!signedIn}
               />
             </label>
-            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-              Send Email
+            <button disabled={!signedIn || busyAction === "email"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              {busyAction === "email" ? "Sending Email..." : "Send Email"}
             </button>
           </form>
 
@@ -469,8 +503,8 @@ export default function AdminPage() {
                 <h2 className="mt-4 text-2xl font-bold">Admin Inbox</h2>
                 <p className="mt-2 text-sm text-slate-300">View recent signups and support tickets submitted through the website.</p>
               </div>
-              <button type="button" onClick={loadAdminInbox} disabled={!signedIn} className="rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-                Refresh Inbox
+              <button type="button" onClick={loadAdminInbox} disabled={!signedIn || busyAction === "inbox"} className="rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+                {busyAction === "inbox" ? "Refreshing Inbox..." : "Refresh Inbox"}
               </button>
             </div>
 
@@ -500,10 +534,10 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => selectClientPortfolio(application.accountNumber)}
-                        disabled={!signedIn}
-                        className="mt-4 w-full rounded-md border border-gold/40 px-4 py-2 text-sm font-bold text-gold disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={!signedIn || busyAction === "portfolio-load"}
+                        className="mt-4 w-full rounded-md border border-gold/40 px-4 py-2 text-sm font-bold text-gold transition hover:bg-gold hover:text-navy active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        Edit This Client Portfolio
+                        {busyAction === "portfolio-load" && selectedAccountNumber === application.accountNumber ? "Loading Portfolio..." : "Edit This Client Portfolio"}
                       </button>
                     </article>
                   )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No signups saved yet.</p>}
@@ -542,10 +576,10 @@ export default function AdminPage() {
                 <p className="mt-2 text-sm text-slate-300">Select one signup, then update that client&apos;s portfolio value, crypto holdings, stocks, and investment balances.</p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button type="button" onClick={() => loadPortfolio()} disabled={!signedIn || !selectedAccountNumber} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
-                  Load Holdings
+                <button type="button" onClick={() => loadPortfolio()} disabled={!signedIn || !selectedAccountNumber || busyAction === "portfolio-load"} className="rounded-md border border-white/20 px-5 py-3 font-bold transition hover:border-gold hover:text-gold active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
+                  {busyAction === "portfolio-load" ? "Loading Holdings..." : "Load Holdings"}
                 </button>
-                <button type="button" onClick={addHolding} disabled={!signedIn} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="button" onClick={addHolding} disabled={!signedIn || isBusy} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/20 px-5 py-3 font-bold transition hover:border-gold hover:text-gold active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
                   <Plus className="size-4" /> Add Holding
                 </button>
               </div>
@@ -626,8 +660,8 @@ export default function AdminPage() {
               )}
             </div>
 
-            <button disabled={!signedIn || holdings.length === 0} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-              Save Client Holdings
+            <button disabled={!signedIn || holdings.length === 0 || busyAction === "portfolio-save"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              {busyAction === "portfolio-save" ? "Saving Client Holdings..." : "Save Client Holdings"}
             </button>
           </form>
 
@@ -651,8 +685,8 @@ export default function AdminPage() {
                 disabled={!signedIn}
               />
             </label>
-            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-              Save Payment Details
+            <button disabled={!signedIn || busyAction === "payment"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              {busyAction === "payment" ? "Saving Payment Details..." : "Save Payment Details"}
             </button>
           </form>
 
@@ -663,8 +697,8 @@ export default function AdminPage() {
                 <h2 className="mt-4 text-2xl font-bold">Deposit Requests</h2>
                 <p className="mt-2 text-sm text-slate-300">Review every cashier deposit request and approve it from the owner console.</p>
               </div>
-              <button type="button" onClick={loadDeposits} disabled={!signedIn} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
-                Refresh Deposits
+              <button type="button" onClick={loadDeposits} disabled={!signedIn || busyAction === "deposits"} className="rounded-md border border-white/20 px-5 py-3 font-bold transition hover:border-gold hover:text-gold active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
+                {busyAction === "deposits" ? "Refreshing Deposits..." : "Refresh Deposits"}
               </button>
             </div>
 
@@ -685,10 +719,10 @@ export default function AdminPage() {
                         <button
                           type="button"
                           onClick={() => approveDepositByReference(deposit.depositReference)}
-                          disabled={!signedIn}
-                          className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={!signedIn || busyAction === `approve-${deposit.depositReference}`}
+                          className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          Approve
+                          {busyAction === `approve-${deposit.depositReference}` ? "Approving..." : "Approve"}
                         </button>
                       ) : null}
                     </div>
@@ -713,8 +747,8 @@ export default function AdminPage() {
               Deposit reference
               <input className="form-field" value={depositId} onChange={(event) => setDepositId(event.target.value)} placeholder="DEP-1780351191132" disabled={!signedIn} />
             </label>
-            <button disabled={!signedIn} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-50">
-              Approve Deposit
+            <button disabled={!signedIn || busyAction === "approve"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              {busyAction === "approve" ? "Approving Deposit..." : "Approve Deposit"}
             </button>
           </form>
         </div>
