@@ -39,9 +39,6 @@ const defaultPortfolio: Portfolio = {
 };
 
 const fileName = "client-portfolios.json";
-const globalPortfolio = globalThis as typeof globalThis & {
-  hutridgePortfolios?: Record<string, Portfolio>;
-};
 
 function cloneDefaultPortfolio(): Portfolio {
   return {
@@ -55,10 +52,7 @@ function normalizeAccountNumber(accountNumber?: string | null) {
 }
 
 async function readPortfolios() {
-  if (globalPortfolio.hutridgePortfolios) return globalPortfolio.hutridgePortfolios;
-  const portfolios = await readStore<Record<string, Portfolio>>(fileName, {});
-  globalPortfolio.hutridgePortfolios = portfolios;
-  return portfolios;
+  return readStore<Record<string, Portfolio>>(fileName, {});
 }
 
 export async function getPortfolio(accountNumber?: string | null) {
@@ -84,7 +78,6 @@ export async function savePortfolio(holdings: Holding[], updatedBy: string, acco
     ...portfolios,
     [key]: portfolio,
   };
-  globalPortfolio.hutridgePortfolios = nextPortfolios;
   await writeStore(fileName, nextPortfolios);
   return portfolio;
 }

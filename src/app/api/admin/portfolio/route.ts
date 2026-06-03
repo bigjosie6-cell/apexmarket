@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { getPortfolio, Holding, savePortfolio, summarizePortfolio } from "@/lib/portfolio";
 
+export const dynamic = "force-dynamic";
+
 type PortfolioRequest = {
   accountNumber?: string;
   holdings?: Holding[];
@@ -21,6 +23,10 @@ export async function GET(request: Request) {
     accountNumber,
     portfolio,
     summary: summarizePortfolio(portfolio.holdings),
+  }, {
+    headers: {
+      "Cache-Control": "no-store",
+    },
   });
 }
 

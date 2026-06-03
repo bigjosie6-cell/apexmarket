@@ -74,10 +74,6 @@ function getLocalPortfolioHoldings(accountNumber?: string) {
   }
 }
 
-function holdingsTotal(items: Holding[]) {
-  return items.reduce((total, holding) => total + Number(holding.value || 0), 0);
-}
-
 type Holding = {
   name: string;
   symbol: string;
@@ -119,22 +115,16 @@ export default function ClientPortalPage() {
         accountNumber = savedApplication.accountNumber;
         setApplication(savedApplication);
       }
-      const savedHoldings = getLocalPortfolioHoldings(accountNumber);
-      if (savedHoldings.length) setHoldings(savedHoldings);
       loadPortfolio(accountNumber);
     });
 
     const loadPortfolio = async (nextAccountNumber = accountNumber) => {
       try {
-        const response = await fetch(`/api/portfolio?accountNumber=${encodeURIComponent(nextAccountNumber)}`);
+        const response = await fetch(`/api/portfolio?accountNumber=${encodeURIComponent(nextAccountNumber)}`, { cache: "no-store" });
         const result = await response.json();
         if (result.portfolio?.holdings?.length) {
-          const savedHoldings = getLocalPortfolioHoldings(nextAccountNumber);
-          const serverHoldings = result.portfolio.holdings as Holding[];
-          const shouldKeepLocal = holdingsTotal(savedHoldings) > 0 && holdingsTotal(serverHoldings) === 0;
-          const nextPortfolio = shouldKeepLocal ? { ...result.portfolio, holdings: savedHoldings } : result.portfolio;
-          setHoldings(nextPortfolio.holdings);
-          window.localStorage.setItem(portfolioStorageKey(nextAccountNumber), JSON.stringify(nextPortfolio));
+          setHoldings(result.portfolio.holdings);
+          window.localStorage.setItem(portfolioStorageKey(nextAccountNumber), JSON.stringify(result.portfolio));
         }
       } catch {
         const savedHoldings = getLocalPortfolioHoldings(nextAccountNumber);
