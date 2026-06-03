@@ -46,11 +46,18 @@ const fallback: Application = {
   submittedAt: new Date().toISOString(),
 };
 
-const watchlist = [
-  ["EUR/USD", "1.08756", "+0.18%"],
-  ["GBP/USD", "1.27436", "-0.07%"],
-  ["XAU/USD", "2358.92", "+0.41%"],
-  ["BTC/USD", "68,448", "+1.16%"],
+type WatchQuote = {
+  symbol: string;
+  price: string;
+  change: string;
+  source?: string;
+};
+
+const watchlist: WatchQuote[] = [
+  { symbol: "EUR/USD", price: "1.08756", change: "+0.18%" },
+  { symbol: "GBP/USD", price: "1.27436", change: "-0.07%" },
+  { symbol: "XAU/USD", price: "2358.92", change: "+0.41%" },
+  { symbol: "BTC/USD", price: "68,448", change: "+1.16%" },
 ];
 
 type Holding = {
@@ -82,6 +89,8 @@ const defaultHoldings: Holding[] = [
 export default function ClientPortalPage() {
   const [application, setApplication] = useState<Application>(fallback);
   const [holdings, setHoldings] = useState<Holding[]>(defaultHoldings);
+  const [quotes, setQuotes] = useState<WatchQuote[]>(watchlist);
+  const [quotesLive, setQuotesLive] = useState(false);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -102,6 +111,24 @@ export default function ClientPortalPage() {
     };
 
     loadPortfolio();
+
+    const loadQuotes = async () => {
+      try {
+        const response = await fetch("/api/market-watch");
+        const result = await response.json();
+        if (result.quotes?.length) {
+          setQuotes(result.quotes);
+          setQuotesLive(Boolean(result.live));
+        }
+      } catch {
+        setQuotes(watchlist);
+        setQuotesLive(false);
+      }
+    };
+
+    loadQuotes();
+    const interval = window.setInterval(loadQuotes, 30000);
+    return () => window.clearInterval(interval);
   }, []);
 
   const totalHoldings = holdings.reduce((total, holding) => total + holding.value, 0);
@@ -258,16 +285,21 @@ export default function ClientPortalPage() {
             <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">Market watch</h2>
-                <LineChart className="size-6 text-gold" />
+                <div className="flex items-center gap-2">
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${quotesLive ? "bg-emerald-400/10 text-emerald-500 dark:text-emerald-300" : "bg-gold/10 text-gold"}`}>
+                    {quotesLive ? "Live" : "Fallback"}
+                  </span>
+                  <LineChart className="size-6 text-gold" />
+                </div>
               </div>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {watchlist.map(([symbol, price, change]) => (
-                  <div key={symbol} className="rounded-md border border-slate-200 p-4 dark:border-white/10">
+                {quotes.map((quote) => (
+                  <div key={quote.symbol} className="rounded-md border border-slate-200 p-4 dark:border-white/10">
                     <div className="flex items-center justify-between">
-                      <strong>{symbol}</strong>
-                      <span className={change.startsWith("+") ? "text-emerald-500" : "text-rose-500"}>{change}</span>
+                      <strong>{quote.symbol}</strong>
+                      <span className={quote.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"}>{quote.change}</span>
                     </div>
-                    <p className="mt-2 text-3xl font-bold">{price}</p>
+                    <p className="mt-2 text-3xl font-bold">{quote.price}</p>
                     <div className="mt-4 flex h-10 items-end gap-1" aria-hidden="true">
                       {[35, 52, 43, 70, 61, 82, 74, 92].map((height, index) => (
                         <span key={index} className="w-full bg-gold/70" style={{ height: `${height}%` }} />
