@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, CircleDollarSign, Landmark, LineChart, ShieldAlert, UserPlus, WalletCards } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import { ArrowDown, ArrowRight, ArrowUp, CircleDollarSign, Landmark, LineChart, ShieldCheck, UserPlus, WalletCards } from "lucide-react";
 
 const symbols = [
   ["EUR/USD", "1.08756", "1.08763", "0.7"],
@@ -13,17 +13,112 @@ const symbols = [
   ["BTC/USD", "68,448", "68,472", "24.0"],
 ];
 
+type ClientApplication = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  accountNumber: string;
+  status: string;
+};
+
+type Holding = {
+  value: number;
+};
+
+type TradeOrder = {
+  orderId: string;
+  symbol: string;
+  side: "Buy" | "Sell";
+  volume: number;
+  orderType: string;
+  indicativePrice: string;
+  status: string;
+  createdAt: string;
+};
+
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
+}
+
 export default function TradePage() {
   const [symbol, setSymbol] = useState("EUR/USD");
   const [side, setSide] = useState<"Buy" | "Sell">("Buy");
   const [volume, setVolume] = useState("0.10");
   const [orderType, setOrderType] = useState<"Market" | "Limit" | "Stop">("Market");
-  const [status, setStatus] = useState("Live execution is disabled until a licensed broker API is connected.");
+  const [status, setStatus] = useState("Log in with a registered account to submit trade requests.");
+  const [application, setApplication] = useState<ClientApplication | null>(null);
+  const [portfolioValue, setPortfolioValue] = useState(0);
+  const [orders, setOrders] = useState<TradeOrder[]>([]);
+  const [submitting, setSubmitting] = useState(false);
   const selected = symbols.find(([name]) => name === symbol) ?? symbols[0];
+  const isLoggedIn = Boolean(application?.accountNumber);
+  const indicativePrice = side === "Buy" ? selected[2] : selected[1];
+
+  useEffect(() => {
+    const loadPortfolio = async (accountNumber: string) => {
+      try {
+        const response = await fetch(`/api/portfolio?accountNumber=${encodeURIComponent(accountNumber)}`, { cache: "no-store" });
+        const result = await response.json();
+        const holdings = (result.portfolio?.holdings ?? []) as Holding[];
+        setPortfolioValue(holdings.reduce((total, holding) => total + Number(holding.value || 0), 0));
+      } catch {
+        setPortfolioValue(0);
+      }
+    };
+
+    const loadOrders = async (accountNumber: string) => {
+      try {
+        const response = await fetch(`/api/orders?accountNumber=${encodeURIComponent(accountNumber)}`, { cache: "no-store" });
+        const result = await response.json();
+        setOrders(result.orders ?? []);
+      } catch {
+        setOrders([]);
+      }
+    };
+
+    queueMicrotask(() => {
+      const saved = window.localStorage.getItem("hutridge-application");
+      if (!saved) return;
+      const nextApplication = JSON.parse(saved) as ClientApplication;
+      setApplication(nextApplication);
+      setStatus(`Trading access ready for ${nextApplication.accountNumber}.`);
+      loadPortfolio(nextApplication.accountNumber);
+      loadOrders(nextApplication.accountNumber);
+    });
+  }, []);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStatus("Registration is required before trade requests can be submitted.");
+    if (!application?.accountNumber) {
+      setStatus("Please log in or open an account before submitting trade requests.");
+      return;
+    }
+
+    setSubmitting(true);
+    setStatus("Submitting trade request...");
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountNumber: application.accountNumber,
+          symbol,
+          side,
+          volume,
+          orderType,
+          indicativePrice,
+        }),
+      });
+      const result = await response.json();
+      setStatus(result.message ?? (response.ok ? "Trade request submitted." : "Trade request could not be submitted."));
+      if (response.ok) {
+        setOrders((current) => [result.order, ...current].filter(Boolean));
+      }
+    } catch {
+      setStatus("Trade request could not be submitted. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -35,6 +130,7 @@ export default function TradePage() {
             <span>Hutridge Financial Live Terminal</span>
           </Link>
           <div className="flex gap-3">
+            <Link href="/login" className="rounded-md border border-white/15 px-4 py-2 text-sm font-bold">Login</Link>
             <Link href="/cashier" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy">Deposit</Link>
             <Link href="/client-portal" className="rounded-md border border-white/15 px-4 py-2 text-sm font-bold">Client Area</Link>
           </div>
@@ -43,29 +139,35 @@ export default function TradePage() {
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
         <aside className="grid gap-5">
-          <article className="rounded-lg border border-gold/40 bg-gold/10 p-5">
-            <UserPlus className="size-7 text-gold" />
-            <h1 className="mt-3 text-2xl font-bold">Register before trading</h1>
+          <article className={`rounded-lg border p-5 ${isLoggedIn ? "border-emerald-300/30 bg-emerald-400/10" : "border-gold/40 bg-gold/10"}`}>
+            {isLoggedIn ? <ShieldCheck className="size-7 text-emerald-300" /> : <UserPlus className="size-7 text-gold" />}
+            <h1 className="mt-3 text-2xl font-bold">{isLoggedIn ? "Trading access active" : "Register before trading"}</h1>
             <p className="mt-2 text-sm leading-6 text-amber-100">
-              Create an Hutridge Financial account first so your profile, country, contact details, account type, and verification status are ready before terminal access.
+              {isLoggedIn
+                ? `${application?.firstName ?? "Client"} ${application?.lastName ?? ""} is connected under ${application?.accountNumber}. Trade requests will be recorded to this account.`
+                : "Create an Hutridge Financial account first so your profile, country, contact details, account type, and verification status are ready before terminal access."}
             </p>
-            <Link href="/open-account" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-bold text-navy">
-              Open Trading Account <ArrowRight className="size-4" />
-            </Link>
+            {!isLoggedIn ? (
+              <Link href="/open-account" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-4 py-3 text-sm font-bold text-navy">
+                Open Trading Account <ArrowRight className="size-4" />
+              </Link>
+            ) : null}
             <Link href="/demo-account" className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-white/15 px-4 py-3 text-sm font-bold">
               Try Demo Account
             </Link>
           </article>
           <article className="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5">
-            <ShieldAlert className="size-7 text-gold" />
-            <h2 className="mt-3 text-xl font-bold">Terminal access locked</h2>
+            <ShieldCheck className="size-7 text-gold" />
+            <h2 className="mt-3 text-xl font-bold">{isLoggedIn ? "Trade request mode" : "Terminal access locked"}</h2>
             <p className="mt-2 text-sm leading-6 text-amber-100">
-              Live execution stays locked until the account registration and approval steps are completed.
+              {isLoggedIn
+                ? "Orders are submitted as account trade requests for desk review. No external broker execution is connected."
+                : "Live execution stays locked until a registered account is logged in on this device."}
             </p>
           </article>
-          <Metric icon={WalletCards} label="Live Balance" value="$0.00" />
-          <Metric icon={CircleDollarSign} label="Available Margin" value="Pending approval" />
-          <Metric icon={Landmark} label="Account Status" value="Not connected" />
+          <Metric icon={WalletCards} label="Portfolio Balance" value={formatMoney(portfolioValue)} />
+          <Metric icon={CircleDollarSign} label="Available Margin" value={isLoggedIn ? formatMoney(portfolioValue) : "Login required"} />
+          <Metric icon={Landmark} label="Account Status" value={isLoggedIn ? application?.status ?? "Verified" : "Not connected"} />
         </aside>
 
         <div className="grid gap-5">
@@ -75,7 +177,9 @@ export default function TradePage() {
                 <p className="section-kicker">Live terminal</p>
                 <h2 className="text-2xl font-bold">{symbol} price board</h2>
               </div>
-              <span className="rounded-full bg-amber-300/15 px-3 py-1 text-sm font-semibold text-amber-200">Execution locked</span>
+              <span className={`rounded-full px-3 py-1 text-sm font-semibold ${isLoggedIn ? "bg-emerald-400/15 text-emerald-200" : "bg-amber-300/15 text-amber-200"}`}>
+                {isLoggedIn ? "Client connected" : "Login required"}
+              </span>
             </div>
             <div className="relative mt-5 h-72 overflow-hidden rounded-md bg-[#061126] p-5">
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.06)_1px,transparent_1px)] bg-[size:38px_38px]" />
@@ -138,11 +242,35 @@ export default function TradePage() {
               <div className="mt-4 rounded-md bg-[#061126] p-4 text-sm text-slate-300">
                 Selected {side} {volume} lots of {symbol} at indicative {side === "Buy" ? selected[2] : selected[1]}.
               </div>
-              <Link href="/open-account" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
-                Register to Trade <ArrowRight className="size-4" />
-              </Link>
+              {isLoggedIn ? (
+                <button disabled={submitting} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
+                  {submitting ? "Submitting..." : "Submit Trade Request"} <ArrowRight className="size-4" />
+                </button>
+              ) : (
+                <Link href="/login" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
+                  Login to Trade <ArrowRight className="size-4" />
+                </Link>
+              )}
               <p className="mt-4 rounded-md border border-white/10 bg-white/5 p-3 text-sm text-slate-300">{status}</p>
             </form>
+          </section>
+
+          <section className="rounded-lg border border-white/10 bg-white/5 p-5">
+            <h2 className="text-xl font-bold">Submitted trade requests</h2>
+            <div className="mt-4 overflow-hidden rounded-md border border-white/10">
+              {orders.length ? orders.map((order) => (
+                <div key={order.orderId} className="grid gap-3 border-b border-white/10 p-4 text-sm last:border-b-0 md:grid-cols-6 md:items-center">
+                  <strong>{order.orderId}</strong>
+                  <span>{order.side} {order.symbol}</span>
+                  <span>{order.volume} lots</span>
+                  <span>{order.orderType}</span>
+                  <span>{order.indicativePrice}</span>
+                  <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-center text-xs font-bold text-emerald-200">{order.status}</span>
+                </div>
+              )) : (
+                <p className="p-4 text-sm text-slate-300">No trade requests submitted for this account yet.</p>
+              )}
+            </div>
           </section>
         </div>
       </section>
