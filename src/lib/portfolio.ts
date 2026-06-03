@@ -38,19 +38,39 @@ const defaultPortfolio: Portfolio = {
   updatedBy: "system",
 };
 
-const fileName = "portfolio.json";
+const fileName = "client-portfolios.json";
 const globalPortfolio = globalThis as typeof globalThis & {
-  hutridgePortfolio?: Portfolio;
+  hutridgePortfolios?: Record<string, Portfolio>;
 };
 
-export async function getPortfolio() {
-  if (globalPortfolio.hutridgePortfolio) return globalPortfolio.hutridgePortfolio;
-  const portfolio = await readStore<Portfolio>(fileName, defaultPortfolio);
-  globalPortfolio.hutridgePortfolio = portfolio;
-  return portfolio;
+function cloneDefaultPortfolio(): Portfolio {
+  return {
+    ...defaultPortfolio,
+    holdings: defaultPortfolio.holdings.map((holding) => ({ ...holding })),
+  };
 }
 
-export async function savePortfolio(holdings: Holding[], updatedBy: string) {
+function normalizeAccountNumber(accountNumber?: string | null) {
+  return accountNumber?.trim().toUpperCase() || "HF-DEMO01";
+}
+
+async function readPortfolios() {
+  if (globalPortfolio.hutridgePortfolios) return globalPortfolio.hutridgePortfolios;
+  const portfolios = await readStore<Record<string, Portfolio>>(fileName, {});
+  globalPortfolio.hutridgePortfolios = portfolios;
+  return portfolios;
+}
+
+export async function getPortfolio(accountNumber?: string | null) {
+  const key = normalizeAccountNumber(accountNumber);
+  const portfolios = await readPortfolios();
+  if (portfolios[key]) return portfolios[key];
+  return cloneDefaultPortfolio();
+}
+
+export async function savePortfolio(holdings: Holding[], updatedBy: string, accountNumber?: string | null) {
+  const key = normalizeAccountNumber(accountNumber);
+  const portfolios = await readPortfolios();
   const portfolio = {
     holdings: holdings.map((holding) => ({
       ...holding,
@@ -60,8 +80,13 @@ export async function savePortfolio(holdings: Holding[], updatedBy: string) {
     updatedAt: new Date().toISOString(),
     updatedBy,
   };
-  globalPortfolio.hutridgePortfolio = portfolio;
-  return writeStore(fileName, portfolio);
+  const nextPortfolios = {
+    ...portfolios,
+    [key]: portfolio,
+  };
+  globalPortfolio.hutridgePortfolios = nextPortfolios;
+  await writeStore(fileName, nextPortfolios);
+  return portfolio;
 }
 
 export function summarizePortfolio(holdings: Holding[]) {

@@ -60,11 +60,13 @@ const watchlist: WatchQuote[] = [
   { symbol: "BTC/USD", price: "68,448", change: "+1.16%" },
 ];
 
-const localPortfolioKey = "hutridge-portfolio";
+function portfolioStorageKey(accountNumber?: string) {
+  return `hutridge-portfolio:${accountNumber || fallback.accountNumber}`;
+}
 
-function getLocalPortfolioHoldings() {
+function getLocalPortfolioHoldings(accountNumber?: string) {
   try {
-    const saved = window.localStorage.getItem(localPortfolioKey);
+    const saved = window.localStorage.getItem(portfolioStorageKey(accountNumber));
     const portfolio = saved ? (JSON.parse(saved) as { holdings?: Holding[] }) : null;
     return portfolio?.holdings ?? [];
   } catch {
@@ -109,32 +111,36 @@ export default function ClientPortalPage() {
   const [quotesLive, setQuotesLive] = useState(false);
 
   useEffect(() => {
+    let accountNumber = fallback.accountNumber;
     queueMicrotask(() => {
       const saved = localStorage.getItem("hutridge-application");
-      if (saved) setApplication(JSON.parse(saved));
-      const savedHoldings = getLocalPortfolioHoldings();
+      if (saved) {
+        const savedApplication = JSON.parse(saved) as Application;
+        accountNumber = savedApplication.accountNumber;
+        setApplication(savedApplication);
+      }
+      const savedHoldings = getLocalPortfolioHoldings(accountNumber);
       if (savedHoldings.length) setHoldings(savedHoldings);
+      loadPortfolio(accountNumber);
     });
 
-    const loadPortfolio = async () => {
+    const loadPortfolio = async (nextAccountNumber = accountNumber) => {
       try {
-        const response = await fetch("/api/portfolio");
+        const response = await fetch(`/api/portfolio?accountNumber=${encodeURIComponent(nextAccountNumber)}`);
         const result = await response.json();
         if (result.portfolio?.holdings?.length) {
-          const savedHoldings = getLocalPortfolioHoldings();
+          const savedHoldings = getLocalPortfolioHoldings(nextAccountNumber);
           const serverHoldings = result.portfolio.holdings as Holding[];
           const shouldKeepLocal = holdingsTotal(savedHoldings) > 0 && holdingsTotal(serverHoldings) === 0;
           const nextPortfolio = shouldKeepLocal ? { ...result.portfolio, holdings: savedHoldings } : result.portfolio;
           setHoldings(nextPortfolio.holdings);
-          window.localStorage.setItem(localPortfolioKey, JSON.stringify(nextPortfolio));
+          window.localStorage.setItem(portfolioStorageKey(nextAccountNumber), JSON.stringify(nextPortfolio));
         }
       } catch {
-        const savedHoldings = getLocalPortfolioHoldings();
+        const savedHoldings = getLocalPortfolioHoldings(nextAccountNumber);
         setHoldings(savedHoldings.length ? savedHoldings : defaultHoldings);
       }
     };
-
-    loadPortfolio();
 
     const loadQuotes = async () => {
       try {

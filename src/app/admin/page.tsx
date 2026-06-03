@@ -57,7 +57,10 @@ type Holding = {
 
 const localTicketKey = "hutridge-support-tickets";
 const localApplicationListKey = "hutridge-applications";
-const localPortfolioKey = "hutridge-portfolio";
+
+function portfolioStorageKey(accountNumber: string) {
+  return `hutridge-portfolio:${accountNumber || "unselected"}`;
+}
 
 function getLocalSupportTickets(): AdminTicket[] {
   try {
@@ -82,9 +85,9 @@ function getLocalApplications(): AdminApplication[] {
   }
 }
 
-function saveLocalPortfolio(holdings: Holding[]) {
+function saveLocalPortfolio(accountNumber: string, holdings: Holding[]) {
   try {
-    window.localStorage.setItem(localPortfolioKey, JSON.stringify({
+    window.localStorage.setItem(portfolioStorageKey(accountNumber), JSON.stringify({
       holdings,
       updatedAt: new Date().toISOString(),
       updatedBy: "admin-browser",
@@ -94,9 +97,9 @@ function saveLocalPortfolio(holdings: Holding[]) {
   }
 }
 
-function getLocalPortfolioHoldings(): Holding[] {
+function getLocalPortfolioHoldings(accountNumber: string): Holding[] {
   try {
-    const saved = window.localStorage.getItem(localPortfolioKey);
+    const saved = window.localStorage.getItem(portfolioStorageKey(accountNumber));
     const portfolio = saved ? (JSON.parse(saved) as { holdings?: Holding[] }) : null;
     return portfolio?.holdings ?? [];
   } catch {
@@ -128,6 +131,7 @@ export default function AdminPage() {
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [selectedAccountNumber, setSelectedAccountNumber] = useState("");
   const [message, setMessage] = useState("Owner login required. This page is not accessible to ordinary users.");
   const [signedIn, setSignedIn] = useState(false);
 
@@ -144,7 +148,6 @@ export default function AdminPage() {
     if (response.ok) {
       loadAdminInbox();
       loadDeposits();
-      loadPortfolio();
     }
   };
 
@@ -169,6 +172,11 @@ export default function AdminPage() {
         all.findIndex((item) => item.accountNumber === application.accountNumber) === index
       ));
       setApplications(mergedApplications);
+      if (mergedApplications.length) {
+        const nextAccountNumber = selectedAccountNumber || mergedApplications[0].accountNumber;
+        setSelectedAccountNumber(nextAccountNumber);
+        loadPortfolio(nextAccountNumber);
+      }
       const serverTickets = (ticketsResult.tickets ?? []) as AdminTicket[];
       const localTickets = getLocalSupportTickets();
       const mergedTickets = [...localTickets, ...serverTickets].filter((ticket, index, all) => (
@@ -193,18 +201,28 @@ export default function AdminPage() {
     }
   };
 
-  const loadPortfolio = async () => {
-    setMessage("Loading portfolio holdings...");
+  const loadPortfolio = async (accountNumber = selectedAccountNumber) => {
+    if (!accountNumber) {
+      setMessage("Select an individual signup before loading holdings.");
+      return;
+    }
+
+    setMessage(`Loading portfolio holdings for ${accountNumber}...`);
     try {
-      const response = await fetch("/api/admin/portfolio", { headers: adminHeaders, credentials: "include" });
+      const response = await fetch(`/api/admin/portfolio?accountNumber=${encodeURIComponent(accountNumber)}`, { headers: adminHeaders, credentials: "include" });
       const result = await response.json();
       const serverHoldings = result.portfolio?.holdings ?? [];
-      const localHoldings = getLocalPortfolioHoldings();
+      const localHoldings = getLocalPortfolioHoldings(accountNumber);
       setHoldings(localHoldings.length ? localHoldings : serverHoldings);
-      setMessage("Portfolio holdings loaded.");
+      setMessage(`Portfolio holdings loaded for ${accountNumber}.`);
     } catch {
       setMessage("Could not load portfolio holdings.");
     }
+  };
+
+  const selectClientPortfolio = (accountNumber: string) => {
+    setSelectedAccountNumber(accountNumber);
+    loadPortfolio(accountNumber);
   };
 
   const updateHolding = (index: number, key: keyof Holding, value: string) => {
@@ -227,6 +245,11 @@ export default function AdminPage() {
 
   const savePortfolio = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!selectedAccountNumber) {
+      setMessage("Select an individual signup before saving holdings.");
+      return;
+    }
+
     setMessage("Saving portfolio holdings...");
 
     try {
@@ -237,14 +260,14 @@ export default function AdminPage() {
           "Content-Type": "application/json",
           ...adminHeaders,
         },
-        body: JSON.stringify({ holdings }),
+        body: JSON.stringify({ accountNumber: selectedAccountNumber, holdings }),
       });
       const result = await response.json();
       setMessage(result.message ?? (response.ok ? "Portfolio holdings saved." : "Portfolio holdings could not be saved."));
       if (response.ok) {
         const savedHoldings = result.portfolio?.holdings ?? holdings;
         setHoldings(savedHoldings);
-        saveLocalPortfolio(savedHoldings);
+        saveLocalPortfolio(selectedAccountNumber, savedHoldings);
       }
     } catch {
       setMessage("Portfolio holdings could not be saved.");
@@ -473,6 +496,14 @@ export default function AdminPage() {
                         <p>Funding: {application.fundingMethod}</p>
                         <p>Submitted: {new Date(application.submittedAt).toLocaleString()}</p>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => selectClientPortfolio(application.accountNumber)}
+                        disabled={!signedIn}
+                        className="mt-4 w-full rounded-md border border-gold/40 px-4 py-2 text-sm font-bold text-gold disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Edit This Client Portfolio
+                      </button>
                     </article>
                   )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No signups saved yet.</p>}
                 </div>
@@ -507,10 +538,10 @@ export default function AdminPage() {
               <div>
                 <WalletCards className="size-8 text-gold" />
                 <h2 className="mt-4 text-2xl font-bold">Client Holdings Editor</h2>
-                <p className="mt-2 text-sm text-slate-300">Update portfolio value, crypto holdings, stocks, and investment balances shown in the client portal.</p>
+                <p className="mt-2 text-sm text-slate-300">Select one signup, then update that client&apos;s portfolio value, crypto holdings, stocks, and investment balances.</p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button type="button" onClick={loadPortfolio} disabled={!signedIn} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="button" onClick={() => loadPortfolio()} disabled={!signedIn || !selectedAccountNumber} className="rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
                   Load Holdings
                 </button>
                 <button type="button" onClick={addHolding} disabled={!signedIn} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/20 px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">
@@ -518,6 +549,32 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
+
+            <label className="mt-6 grid gap-2 text-sm font-semibold">
+              Individual signup
+              <select
+                className="form-field"
+                value={selectedAccountNumber}
+                onChange={(event) => selectClientPortfolio(event.target.value)}
+                disabled={!signedIn || applications.length === 0}
+              >
+                <option value="">Select a client signup</option>
+                {applications.map((application) => (
+                  <option key={application.accountNumber} value={application.accountNumber}>
+                    {application.accountNumber} - {application.firstName} {application.lastName} - {application.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {selectedAccountNumber ? (
+              <p className="mt-3 rounded-md border border-emerald-300/20 bg-emerald-400/10 p-3 text-sm font-semibold text-emerald-100">
+                Editing holdings for {selectedAccountNumber}. These values will show only in that client&apos;s portal.
+              </p>
+            ) : (
+              <p className="mt-3 rounded-md border border-white/10 bg-[#07111f] p-3 text-sm text-slate-300">
+                Load the admin inbox, then choose a signup before saving portfolio values.
+              </p>
+            )}
 
             <div className="mt-6 grid gap-4">
               {holdings.length ? holdings.map((holding, index) => (

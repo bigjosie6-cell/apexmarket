@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getPortfolio, Holding, savePortfolio, summarizePortfolio } from "@/lib/portfolio";
 
 type PortfolioRequest = {
+  accountNumber?: string;
   holdings?: Holding[];
 };
 
@@ -13,9 +14,11 @@ export async function GET(request: Request) {
     return session;
   }
 
-  const portfolio = await getPortfolio();
+  const accountNumber = new URL(request.url).searchParams.get("accountNumber");
+  const portfolio = await getPortfolio(accountNumber);
   return NextResponse.json({
     ok: true,
+    accountNumber,
     portfolio,
     summary: summarizePortfolio(portfolio.holdings),
   });
@@ -29,7 +32,12 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as PortfolioRequest;
+  const accountNumber = body.accountNumber?.trim();
   const holdings = body.holdings;
+
+  if (!accountNumber) {
+    return NextResponse.json({ ok: false, message: "Select a client signup before saving holdings." }, { status: 400 });
+  }
 
   if (!Array.isArray(holdings) || holdings.length === 0) {
     return NextResponse.json({ ok: false, message: "Add at least one holding." }, { status: 400 });
@@ -40,11 +48,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Each holding needs a name, symbol, and category." }, { status: 400 });
   }
 
-  const portfolio = await savePortfolio(holdings, session.adminId);
+  const portfolio = await savePortfolio(holdings, session.adminId, accountNumber);
 
   return NextResponse.json({
     ok: true,
-    message: "Client portfolio holdings updated.",
+    accountNumber,
+    message: `Portfolio holdings updated for ${accountNumber}.`,
     portfolio,
     summary: summarizePortfolio(portfolio.holdings),
   });
