@@ -647,7 +647,7 @@ export default function Home() {
           <div className="grid gap-4 text-sm">
             <p><strong>Live Chat:</strong> Available 24/7</p>
             <p><strong>Support Email:</strong> support@hutridgefinancial.com</p>
-            <p><strong>Office Address:</strong> Anonymous</p>
+            <p><strong>Office Address:</strong> 1101 Brickell Avenue, Suite N-1500 Miami, FL 33131</p>
             <p><strong>Business Hours:</strong> Monday to Sunday, 24 hours</p>
           </div>
           <div className="mt-8 grid h-72 place-items-center rounded-md bg-[linear-gradient(135deg,#e2e8f0,#ffffff)] text-slate-500 dark:bg-[linear-gradient(135deg,#0A1F44,#111827)] dark:text-slate-300">
