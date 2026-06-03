@@ -105,7 +105,7 @@ function saveLocalApplication(application: FormState & { accountNumber: string; 
   try {
     const saved = window.localStorage.getItem(localApplicationListKey);
     const applications = saved ? (JSON.parse(saved) as Array<typeof application>) : [];
-    const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)].slice(0, 100);
+    const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)];
     window.localStorage.setItem(localApplicationListKey, JSON.stringify(next));
   } catch {
     // The primary current-session profile is still saved separately.

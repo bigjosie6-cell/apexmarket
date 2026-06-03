@@ -477,7 +477,8 @@ export default function AdminPage() {
             <div className="mt-6 grid gap-5 lg:grid-cols-2">
               <div className="rounded-lg border border-white/10 bg-[#07111f] p-5">
                 <h3 className="flex items-center gap-2 text-xl font-bold"><UsersRound className="size-5 text-gold" /> Signups ({applications.length})</h3>
-                <div className="mt-4 grid max-h-96 gap-3 overflow-y-auto pr-1">
+                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Showing all saved account applications</p>
+                <div className="mt-4 grid max-h-[40rem] gap-3 overflow-y-auto pr-1">
                   {applications.length ? applications.map((application) => (
                     <article key={application.accountNumber} className="rounded-md border border-white/10 bg-white/5 p-4">
                       <div className="flex items-start justify-between gap-3">

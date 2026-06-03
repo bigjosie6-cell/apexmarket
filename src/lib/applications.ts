@@ -30,7 +30,7 @@ export async function listApplications() {
 
 export async function saveApplication(application: AccountApplication) {
   const applications = await listApplications();
-  const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)].slice(0, 100);
+  const next = [application, ...applications.filter((item) => item.accountNumber !== application.accountNumber)];
   globalApplications.hutridgeApplications = next;
   return writeStore(fileName, next);
 }
