@@ -33,15 +33,15 @@ type Application = {
 };
 
 const fallback: Application = {
-  firstName: "Demo",
-  lastName: "Trader",
-  email: "demo@hutridgefinancial.com",
+  firstName: "Client",
+  lastName: "User",
+  email: "client@hutridgefinancial.com",
   country: "United States",
   accountType: "Standard",
   baseCurrency: "USD",
   fundingMethod: "Bank Transfer",
   expectedDeposit: "1000",
-  accountNumber: "HF-DEMO01",
+  accountNumber: "HF-CLIENT",
   status: "Verified",
   submittedAt: new Date().toISOString(),
 };

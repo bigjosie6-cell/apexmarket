@@ -368,13 +368,6 @@ export default function Home() {
                   Trade
                 </a>
                 <a
-                  href="/demo-account"
-                  className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Demo
-                </a>
-                <a
                   href="/donate"
                   className="rounded-md border border-slate-200 px-4 py-3 text-center text-sm font-bold text-navy dark:border-white/15 dark:text-white"
                   onClick={() => setMobileMenuOpen(false)}
@@ -429,9 +422,6 @@ export default function Home() {
               </a>
               <a href="#live-chart" className="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-4 font-bold text-navy dark:border-white/30 dark:text-white">
                 Live Chart
-              </a>
-              <a href="/demo-account" className="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-4 font-bold text-navy dark:border-white/30 dark:text-white">
-                Try Demo Account
               </a>
             </div>
             <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -521,7 +511,7 @@ export default function Home() {
               <ul className="mt-7 space-y-4">
                 {[line1, line2].map((item) => <li key={item} className="flex gap-2"><Check className="size-5 text-gold" />{item}</li>)}
               </ul>
-              <a href={index === 0 ? "/demo-account" : "/open-account"} className={`mt-8 inline-flex w-full items-center justify-center rounded-md px-5 py-3 font-bold ${index === 1 ? "bg-gold text-navy" : "bg-navy text-white dark:bg-gold dark:text-navy"}`}>{index === 0 ? "Try Demo" : "Open Account"}</a>
+              <a href="/open-account" className={`mt-8 inline-flex w-full items-center justify-center rounded-md px-5 py-3 font-bold ${index === 1 ? "bg-gold text-navy" : "bg-navy text-white dark:bg-gold dark:text-navy"}`}>Open Account</a>
             </article>
           ))}
         </div>

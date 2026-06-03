@@ -152,9 +152,6 @@ export default function TradePage() {
                 Open Trading Account <ArrowRight className="size-4" />
               </Link>
             ) : null}
-            <Link href="/demo-account" className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-white/15 px-4 py-3 text-sm font-bold">
-              Try Demo Account
-            </Link>
           </article>
           <article className="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5">
             <ShieldCheck className="size-7 text-gold" />
