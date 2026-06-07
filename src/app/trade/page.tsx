@@ -121,6 +121,7 @@ export default function TradePage() {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           accountNumber: application.accountNumber,
           symbol,
@@ -264,7 +265,7 @@ export default function TradePage() {
                 Selected {side} {volume} lots of {symbol} at indicative {side === "Buy" ? selected[2] : selected[1]}.
               </div>
               {isLoggedIn ? (
-                <button disabled={submitting} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
+                <button type="submit" disabled={submitting} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
                   {submitting ? "Submitting Trade Request..." : "Submit Trade Request"} <ArrowRight className="size-4" />
                 </button>
               ) : (

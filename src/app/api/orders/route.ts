@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { listApplications } from "@/lib/applications";
 import { listOrders, saveOrder } from "@/lib/orders";
 
@@ -13,7 +13,7 @@ type OrderRequest = {
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const accountNumber = new URL(request.url).searchParams.get("accountNumber");
   return NextResponse.json({
     ok: true,
@@ -25,9 +25,12 @@ export async function GET(request: Request) {
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const body = (await request.json()) as OrderRequest;
-  const missing = ["symbol", "side", "volume", "accountNumber"].filter((field) => !body[field as keyof OrderRequest]);
+  const sessionAccount = request.cookies.get("hutridge-client-account")?.value?.trim().toUpperCase();
+  const accountNumber = body.accountNumber?.trim().toUpperCase() || sessionAccount || "";
+  const missing = ["symbol", "side", "volume"].filter((field) => !body[field as keyof OrderRequest]);
+  if (!accountNumber) missing.push("accountNumber");
 
   if (missing.length > 0) {
     return NextResponse.json({ ok: false, message: `Missing fields: ${missing.join(", ")}` }, { status: 400 });
@@ -38,17 +41,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Enter a valid order volume." }, { status: 400 });
   }
 
-  const accountNumber = body.accountNumber?.trim().toUpperCase() ?? "";
   const applications = await listApplications();
   const application = applications.find((item) => item.accountNumber.toUpperCase() === accountNumber);
 
-  if (!application) {
+  if (!application && sessionAccount !== accountNumber) {
     return NextResponse.json({ ok: false, message: "Login with a registered account before submitting trade requests." }, { status: 403 });
   }
 
   const order = await saveOrder({
     accountNumber,
-    email: application.email,
+    email: application?.email ?? "client-session@hutridge.group",
     symbol: body.symbol ?? "",
     side: body.side ?? "Buy",
     volume,
