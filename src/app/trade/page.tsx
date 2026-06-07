@@ -53,9 +53,6 @@ export default function TradePage() {
   const selected = symbols.find(([name]) => name === symbol) ?? symbols[0];
   const isLoggedIn = Boolean(application?.accountNumber);
   const indicativePrice = side === "Buy" ? selected[2] : selected[1];
-  const ticketStatus = isLoggedIn
-    ? `Trading access ready for ${application?.accountNumber}. Trade requests can be submitted now.`
-    : status;
 
   useEffect(() => {
     const loadPortfolio = async (accountNumber: string) => {
@@ -137,6 +134,9 @@ export default function TradePage() {
       setStatus(result.message ?? (response.ok ? "Trade request submitted." : "Trade request could not be submitted."));
       if (response.ok) {
         setOrders((current) => [result.order, ...current].filter(Boolean));
+        const refreshed = await fetch(`/api/orders?accountNumber=${encodeURIComponent(application.accountNumber)}`, { cache: "no-store" });
+        const refreshedResult = await refreshed.json();
+        setOrders(refreshedResult.orders ?? [result.order].filter(Boolean));
       }
     } catch {
       setStatus("Trade request could not be submitted. Try again.");
@@ -265,7 +265,7 @@ export default function TradePage() {
               </div>
               {isLoggedIn ? (
                 <button disabled={submitting} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy disabled:cursor-not-allowed disabled:opacity-60">
-                  {submitting ? "Submitting..." : "Submit Trade Request"} <ArrowRight className="size-4" />
+                  {submitting ? "Submitting Trade Request..." : "Submit Trade Request"} <ArrowRight className="size-4" />
                 </button>
               ) : (
             <Link href="/login?next=/trade" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
@@ -273,7 +273,7 @@ export default function TradePage() {
             </Link>
               )}
               <p className={`mt-4 rounded-md border p-3 text-sm ${isLoggedIn ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-300"}`}>
-                {ticketStatus}
+                {status}
               </p>
             </form>
           </section>
