@@ -38,9 +38,19 @@ export async function POST(request: Request) {
     lastName: application.lastName,
   });
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     ok: true,
     message: "Login successful.",
     application,
   });
+
+  response.cookies.set("hutridge-client-account", application.accountNumber, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  return response;
 }

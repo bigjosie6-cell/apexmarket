@@ -76,15 +76,36 @@ export default function TradePage() {
       }
     };
 
-    queueMicrotask(() => {
-      const saved = window.localStorage.getItem("hutridge-application");
-      if (!saved) return;
-      const nextApplication = JSON.parse(saved) as ClientApplication;
+    const connectApplication = (nextApplication: ClientApplication) => {
       setApplication(nextApplication);
       setStatus(`Trading access ready for ${nextApplication.accountNumber}.`);
       loadPortfolio(nextApplication.accountNumber);
       loadOrders(nextApplication.accountNumber);
-    });
+    };
+
+    const loadClientSession = async () => {
+      const saved = window.localStorage.getItem("hutridge-application");
+      if (saved) {
+        connectApplication(JSON.parse(saved) as ClientApplication);
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/client-session", { cache: "no-store", credentials: "include" });
+        const result = await response.json();
+        if (response.ok && result.application) {
+          window.localStorage.setItem("hutridge-application", JSON.stringify(result.application));
+          connectApplication(result.application as ClientApplication);
+          return;
+        }
+      } catch {
+        // Keep the login prompt visible if the session cannot be loaded.
+      }
+
+      setStatus("Login with a registered account before submitting trade requests.");
+    };
+
+    loadClientSession();
   }, []);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
