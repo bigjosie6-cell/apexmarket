@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Inbox, LockKeyhole, Mail, Plus, ShieldCheck, TicketCheck, Trash2, UsersRound, WalletCards } from "lucide-react";
+import { Inbox, LineChart, LockKeyhole, Mail, Plus, ShieldCheck, TicketCheck, Trash2, UsersRound, WalletCards } from "lucide-react";
 
 const paymentMethods = ["Bank Transfer", "Debit/Credit Card", "Mobile Money", "Crypto USDT"];
 
@@ -53,6 +53,19 @@ type AdminDeposit = {
   createdAt: string;
   approvedAt?: string;
   approvedBy?: string;
+};
+
+type AdminTradeOrder = {
+  orderId: string;
+  accountNumber: string;
+  email: string;
+  symbol: string;
+  side: "Buy" | "Sell";
+  volume: number;
+  orderType: string;
+  indicativePrice: string;
+  status: string;
+  createdAt: string;
 };
 
 type Holding = {
@@ -150,6 +163,7 @@ export default function AdminPage() {
   const [applications, setApplications] = useState<AdminApplication[]>([]);
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [logins, setLogins] = useState<AdminLoginActivity[]>([]);
+  const [orders, setOrders] = useState<AdminTradeOrder[]>([]);
   const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [selectedAccountNumber, setSelectedAccountNumber] = useState("");
@@ -189,14 +203,16 @@ export default function AdminPage() {
     setBusyAction("inbox");
     setMessage("Loading admin inbox...");
     try {
-      const [applicationsResponse, ticketsResponse, loginsResponse] = await Promise.all([
+      const [applicationsResponse, ticketsResponse, loginsResponse, ordersResponse] = await Promise.all([
         fetch("/api/admin/applications", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
         fetch("/api/admin/support-tickets", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
         fetch("/api/admin/login-activity", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
+        fetch("/api/admin/orders", { headers: adminHeaders, credentials: "include", cache: "no-store" }),
       ]);
       const applicationsResult = await applicationsResponse.json();
       const ticketsResult = await ticketsResponse.json();
       const loginsResult = await loginsResponse.json();
+      const ordersResult = await ordersResponse.json();
       const serverApplications = (applicationsResult.applications ?? []) as AdminApplication[];
       const localApplications = getLocalApplications();
       const mergedApplications = [...localApplications, ...serverApplications].filter((application, index, all) => (
@@ -220,7 +236,9 @@ export default function AdminPage() {
         all.findIndex((item) => item.id === loginRecord.id) === index
       ));
       setLogins(mergedLogins);
-      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups, ${mergedLogins.length} logins, and ${mergedTickets.length} support tickets.`);
+      const serverOrders = (ordersResult.orders ?? []) as AdminTradeOrder[];
+      setOrders(serverOrders);
+      setMessage(`Admin inbox loaded. Showing ${mergedApplications.length} signups, ${mergedLogins.length} logins, ${mergedTickets.length} support tickets, and ${serverOrders.length} trade requests.`);
     } catch {
       setMessage("Could not load admin inbox. Try refreshing after unlocking admin.");
     } finally {
@@ -616,6 +634,30 @@ export default function AdminPage() {
                     </div>
                   </article>
                 )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300 md:col-span-2">No client logins saved yet.</p>}
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-lg border border-white/10 bg-[#07111f] p-5">
+              <h3 className="flex items-center gap-2 text-xl font-bold"><LineChart className="size-5 text-gold" /> Trade Requests ({orders.length})</h3>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Submitted buy and sell requests from logged-in clients</p>
+              <div className="mt-4 grid max-h-96 gap-3 overflow-y-auto pr-1">
+                {orders.length ? orders.map((order) => (
+                  <article key={order.orderId} className="rounded-md border border-white/10 bg-white/5 p-4">
+                    <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">{order.orderId}</p>
+                        <h4 className="mt-2 text-xl font-bold">{order.side} {order.volume} lots of {order.symbol}</h4>
+                        <p className="mt-1 text-sm text-slate-300">{order.email} · Account {order.accountNumber}</p>
+                      </div>
+                      <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-200">{order.status}</span>
+                    </div>
+                    <div className="mt-3 grid gap-1 text-sm text-slate-300 md:grid-cols-3">
+                      <p>Order type: <strong className="text-white">{order.orderType}</strong></p>
+                      <p>Price: <strong className="text-white">{order.indicativePrice}</strong></p>
+                      <p>Submitted: <strong className="text-white">{new Date(order.createdAt).toLocaleString()}</strong></p>
+                    </div>
+                  </article>
+                )) : <p className="rounded-md border border-white/10 bg-white/5 p-4 text-sm text-slate-300">No trade requests submitted yet.</p>}
               </div>
             </div>
           </section>
