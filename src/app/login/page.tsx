@@ -70,6 +70,7 @@ export default function ClientLoginPage() {
     event.preventDefault();
     setLoading(true);
     setMessage("Checking login details...");
+    const nextPath = new URLSearchParams(window.location.search).get("next") === "/trade" ? "/trade" : "/client-portal";
 
     try {
       const response = await fetch("/api/client-login", {
@@ -85,7 +86,7 @@ export default function ClientLoginPage() {
           localStorage.setItem("hutridge-application", JSON.stringify(localApplication));
           saveLocalLoginActivity(localApplication);
           setMessage("Login successful. Opening client area...");
-          router.push("/client-portal");
+          router.push(nextPath);
           return;
         }
         setMessage(result.message ?? "Login failed.");
@@ -95,7 +96,7 @@ export default function ClientLoginPage() {
       localStorage.setItem("hutridge-application", JSON.stringify(result.application));
       saveLocalLoginActivity(result.application);
       setMessage("Login successful. Opening client area...");
-      router.push("/client-portal");
+      router.push(nextPath);
     } catch {
       setMessage("Login could not be completed. Please try again.");
     } finally {

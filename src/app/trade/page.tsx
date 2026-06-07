@@ -53,6 +53,9 @@ export default function TradePage() {
   const selected = symbols.find(([name]) => name === symbol) ?? symbols[0];
   const isLoggedIn = Boolean(application?.accountNumber);
   const indicativePrice = side === "Buy" ? selected[2] : selected[1];
+  const ticketStatus = isLoggedIn
+    ? `Trading access ready for ${application?.accountNumber}. Trade requests can be submitted now.`
+    : status;
 
   useEffect(() => {
     const loadPortfolio = async (accountNumber: string) => {
@@ -265,11 +268,13 @@ export default function TradePage() {
                   {submitting ? "Submitting..." : "Submit Trade Request"} <ArrowRight className="size-4" />
                 </button>
               ) : (
-                <Link href="/login" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
-                  Login to Trade <ArrowRight className="size-4" />
-                </Link>
+            <Link href="/login?next=/trade" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-bold text-navy">
+              Login to Trade <ArrowRight className="size-4" />
+            </Link>
               )}
-              <p className="mt-4 rounded-md border border-white/10 bg-white/5 p-3 text-sm text-slate-300">{status}</p>
+              <p className={`mt-4 rounded-md border p-3 text-sm ${isLoggedIn ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-300"}`}>
+                {ticketStatus}
+              </p>
             </form>
           </section>
 
