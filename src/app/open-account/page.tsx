@@ -102,7 +102,7 @@ const finalReviewDelayMs = 20000;
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const localApplicationListKey = "hutridge-applications";
 
-function saveLocalApplication(application: FormState & { accountNumber: string; status: string; submittedAt: string }) {
+function saveLocalApplication(application: FormState & { accountNumber: string; status: string; submittedAt: string; emailSent?: boolean }) {
   try {
     const saved = window.localStorage.getItem(localApplicationListKey);
     const applications = saved ? (JSON.parse(saved) as Array<typeof application>) : [];
@@ -203,7 +203,7 @@ export default function OpenAccountPage() {
         body: JSON.stringify(application),
       });
       const result = await response.json();
-      const savedApplication = { ...application, accountNumber: result.accountNumber ?? accountNumber };
+      const savedApplication = { ...application, accountNumber: result.accountNumber ?? accountNumber, emailSent: Boolean(result.emailSent) };
       localStorage.setItem("hutridge-application", JSON.stringify(savedApplication));
       saveLocalApplication(savedApplication);
       setSubmitStatus(result.message ?? "Application created.");

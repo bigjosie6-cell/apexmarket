@@ -215,7 +215,7 @@ export default function AdminPage() {
       const ordersResult = await ordersResponse.json();
       const serverApplications = (applicationsResult.applications ?? []) as AdminApplication[];
       const localApplications = getLocalApplications();
-      const mergedApplications = [...localApplications, ...serverApplications].filter((application, index, all) => (
+      const mergedApplications = [...serverApplications, ...localApplications].filter((application, index, all) => (
         all.findIndex((item) => item.accountNumber === application.accountNumber) === index
       ));
       setApplications(mergedApplications);
