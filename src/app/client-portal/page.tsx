@@ -114,6 +114,10 @@ export default function ClientPortalPage() {
   const [quotesLive, setQuotesLive] = useState(false);
   const [quotesUpdatedAt, setQuotesUpdatedAt] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsRead, setNotificationsRead] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("hutridge-notifications-read") === "true";
+  });
 
   useEffect(() => {
     let accountNumber = fallback.accountNumber;
@@ -188,6 +192,13 @@ export default function ClientPortalPage() {
       time: quotesUpdatedAt ? new Date(quotesUpdatedAt).toLocaleTimeString() : "Pending",
     },
   ];
+  const unreadCount = notificationsRead ? 0 : notifications.length;
+
+  const toggleNotifications = () => {
+    setNotificationsOpen((open) => !open);
+    setNotificationsRead(true);
+    window.localStorage.setItem("hutridge-notifications-read", "true");
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
@@ -201,15 +212,17 @@ export default function ClientPortalPage() {
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setNotificationsOpen((open) => !open)}
+                onClick={toggleNotifications}
                 className="relative rounded-md border border-slate-200 p-2 transition hover:border-gold hover:text-gold dark:border-white/10"
                 aria-label="Notifications"
                 aria-expanded={notificationsOpen}
               >
                 <Bell className="size-5" />
-                <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-gold text-[0.65rem] font-bold text-navy">
-                  {notifications.length}
-                </span>
+                {unreadCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-gold text-[0.65rem] font-bold text-navy">
+                    {unreadCount}
+                  </span>
+                ) : null}
               </button>
               {notificationsOpen ? (
                 <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1b2c]">
