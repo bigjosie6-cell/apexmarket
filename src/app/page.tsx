@@ -144,6 +144,21 @@ const education = [
   "Webinars",
 ];
 
+const aboutCards = [
+  {
+    title: "Company Story",
+    body: "Hutridge Financial was built to give clients a cleaner route into global markets, pairing modern account tools with clear support and transparent funding workflows.",
+  },
+  {
+    title: "Mission & Vision",
+    body: "Our mission is to make market access feel organized, secure, and responsive while building a long-term platform for traders, partners, and private clients.",
+  },
+  {
+    title: "Global Presence",
+    body: "Clients can access account support, market tools, portfolio views, and funding assistance from anywhere, with service coverage designed around international market hours.",
+  },
+];
+
 function Sparkline({ up = true }: { up?: boolean }) {
   return (
     <div className="flex h-9 items-end gap-1" aria-hidden="true">
@@ -677,10 +692,10 @@ export default function Home() {
           <p className="section-kicker">About us</p>
           <h2 className="section-title text-white">A global brokerage built around disciplined execution</h2>
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {["Company Story", "Mission & Vision", "Global Presence"].map((item) => (
-              <div key={item} className="rounded-lg border border-white/15 bg-white/5 p-6">
-                <h3 className="text-xl font-semibold">{item}</h3>
-                <p className="mt-3 text-slate-300">Hutridge Financial combines modern fintech infrastructure, client education, and relationship-led service for retail, professional, partner, and institutional clients.</p>
+            {aboutCards.map((item) => (
+              <div key={item.title} className="rounded-lg border border-white/15 bg-white/5 p-6">
+                <h3 className="text-xl font-semibold">{item.title}</h3>
+                <p className="mt-3 text-slate-300">{item.body}</p>
               </div>
             ))}
           </div>
