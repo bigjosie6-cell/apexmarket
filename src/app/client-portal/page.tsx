@@ -113,6 +113,7 @@ export default function ClientPortalPage() {
   const [quotes, setQuotes] = useState<WatchQuote[]>(watchlist);
   const [quotesLive, setQuotesLive] = useState(false);
   const [quotesUpdatedAt, setQuotesUpdatedAt] = useState("");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   useEffect(() => {
     let accountNumber = fallback.accountNumber;
@@ -170,6 +171,23 @@ export default function ClientPortalPage() {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(application.submittedAt));
+  const notifications = [
+    {
+      title: "Account verified",
+      body: `${application.accountNumber} is active and ready for funding.`,
+      time: "Now",
+    },
+    {
+      title: "Funding desk available",
+      body: `Selected funding method: ${application.fundingMethod}. Deposit details can be requested from Cashier.`,
+      time: "Today",
+    },
+    {
+      title: "Market watch updated",
+      body: quotesLive ? "Live quotes are refreshing from the connected market feed." : "Fallback quotes are showing until the market feed responds.",
+      time: quotesUpdatedAt ? new Date(quotesUpdatedAt).toLocaleTimeString() : "Pending",
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
@@ -180,9 +198,46 @@ export default function ClientPortalPage() {
             <span>Hutridge Financial Client Area</span>
           </Link>
           <div className="flex items-center gap-3">
-            <button className="rounded-md border border-slate-200 p-2 dark:border-white/10" aria-label="Notifications">
-              <Bell className="size-5" />
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setNotificationsOpen((open) => !open)}
+                className="relative rounded-md border border-slate-200 p-2 transition hover:border-gold hover:text-gold dark:border-white/10"
+                aria-label="Notifications"
+                aria-expanded={notificationsOpen}
+              >
+                <Bell className="size-5" />
+                <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-gold text-[0.65rem] font-bold text-navy">
+                  {notifications.length}
+                </span>
+              </button>
+              {notificationsOpen ? (
+                <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1b2c]">
+                  <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-white/10">
+                    <div>
+                      <p className="text-sm font-bold">Notifications</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Latest client account updates</p>
+                    </div>
+                    <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-500 dark:text-emerald-300">Live</span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div key={notification.title} className="border-b border-slate-100 px-4 py-3 last:border-b-0 dark:border-white/10">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="font-semibold">{notification.title}</p>
+                          <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{notification.time}</span>
+                        </div>
+                        <p className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">{notification.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 border-t border-slate-200 text-sm font-bold dark:border-white/10">
+                    <Link href="/support" className="px-4 py-3 text-center hover:bg-slate-50 dark:hover:bg-white/5">Support</Link>
+                    <Link href="/cashier" className="border-l border-slate-200 px-4 py-3 text-center hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">Cashier</Link>
+                  </div>
+                </div>
+              ) : null}
+            </div>
             <Link href="/trade" className="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold dark:border-white/10">
               Trade
             </Link>
