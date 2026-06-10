@@ -390,7 +390,7 @@ export default function OpenAccountPage() {
                   I understand that forex and CFD trading involves significant risk and I may lose more than my initial investment.
                 </CheckBox>
                 <CheckBox checked={form.acceptTerms} onChange={(value) => update("acceptTerms", value)} error={errors.acceptTerms}>
-                  I accept the Hutridge Financial client agreement, privacy policy, AML policy, and risk disclosure.
+                  I accept the Hutridge Financial client agreement, <a className="text-gold underline" href="/privacy-policy" target="_blank">privacy policy</a>, <a className="text-gold underline" href="/aml-policy" target="_blank">AML policy</a>, and <a className="text-gold underline" href="/risk-disclosure" target="_blank">risk disclosure</a>.
                 </CheckBox>
               </div>
             </section>

@@ -50,6 +50,14 @@ const navHref = (item: string) => {
   return `#${item.toLowerCase().replaceAll(" ", "-")}`;
 };
 
+const legalLinks = [
+  ["Privacy Policy", "/privacy-policy"],
+  ["Terms & Conditions", "/terms"],
+  ["AML Policy", "/aml-policy"],
+  ["KYC Policy", "/kyc-policy"],
+  ["Risk Disclosure", "/risk-disclosure"],
+] as const;
+
 const instruments = [
   {
     name: "Forex",
@@ -716,7 +724,9 @@ export default function Home() {
             <div key={group}>
               <h3 className="font-semibold text-gold">{group}</h3>
               <div className="mt-4 grid gap-2 text-sm text-slate-300">
-                {["Privacy Policy", "Terms & Conditions", "AML Policy", "KYC Policy", "Risk Disclosure"].slice(0, group === "Legal" ? 5 : 3).map((item) => <a key={item} href="#">{item}</a>)}
+                {group === "Legal"
+                  ? legalLinks.map(([item, href]) => <a key={item} href={href} className="hover:text-gold">{item}</a>)
+                  : ["About Hutridge", "Trading Products", "Client Portal"].map((item) => <a key={item} href={item === "Client Portal" ? "/client-portal" : "#home"} className="hover:text-gold">{item}</a>)}
                 {group === "Company" ? <a href="/donate">Hutridge Financial Gives</a> : null}
                 {group === "Support" ? <a href="/support">Support Center</a> : null}
               </div>
