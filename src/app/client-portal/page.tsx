@@ -54,11 +54,18 @@ type WatchQuote = {
 };
 
 const watchlist: WatchQuote[] = [
-  { symbol: "EUR/USD", price: "1.08756", change: "+0.18%" },
-  { symbol: "GBP/USD", price: "1.27436", change: "-0.07%" },
-  { symbol: "XAU/USD", price: "2358.92", change: "+0.41%" },
-  { symbol: "BTC/USD", price: "68,448", change: "+1.16%" },
+  { symbol: "EUR/USD", price: "1.08756", change: "+0.18%", source: "fallback" },
+  { symbol: "GBP/USD", price: "1.27436", change: "-0.07%", source: "fallback" },
+  { symbol: "USD/JPY", price: "156.301", change: "+0.24%", source: "fallback" },
+  { symbol: "XAU/USD", price: "2358.92", change: "+0.41%", source: "fallback" },
+  { symbol: "BTC/USD", price: "68,448", change: "+1.16%", source: "fallback" },
 ];
+
+function quoteBars(quote: WatchQuote) {
+  const base = Math.abs(Number.parseFloat(quote.price.replaceAll(",", ""))) || 1;
+  const change = Math.abs(Number.parseFloat(quote.change)) || 0.1;
+  return Array.from({ length: 8 }, (_, index) => 30 + ((base / (index + 3) + change * 17 + index * 11) % 62));
+}
 
 function portfolioStorageKey(accountNumber?: string) {
   return `hutridge-portfolio:${accountNumber || fallback.accountNumber}`;
@@ -105,6 +112,7 @@ export default function ClientPortalPage() {
   const [holdings, setHoldings] = useState<Holding[]>(defaultHoldings);
   const [quotes, setQuotes] = useState<WatchQuote[]>(watchlist);
   const [quotesLive, setQuotesLive] = useState(false);
+  const [quotesUpdatedAt, setQuotesUpdatedAt] = useState("");
 
   useEffect(() => {
     let accountNumber = fallback.accountNumber;
@@ -134,15 +142,17 @@ export default function ClientPortalPage() {
 
     const loadQuotes = async () => {
       try {
-        const response = await fetch("/api/market-watch");
+        const response = await fetch("/api/market-watch", { cache: "no-store" });
         const result = await response.json();
         if (result.quotes?.length) {
           setQuotes(result.quotes);
           setQuotesLive(Boolean(result.live));
+          setQuotesUpdatedAt(result.updatedAt ?? new Date().toISOString());
         }
       } catch {
         setQuotes(watchlist);
         setQuotesLive(false);
+        setQuotesUpdatedAt("");
       }
     };
 
@@ -304,10 +314,15 @@ export default function ClientPortalPage() {
 
             <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Market watch</h2>
+                <div>
+                  <h2 className="text-xl font-bold">Live market watch</h2>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {quotesUpdatedAt ? `Updated ${new Date(quotesUpdatedAt).toLocaleTimeString()}` : "Waiting for market feed"}
+                  </p>
+                </div>
                 <div className="flex items-center gap-2">
                   <span className={`rounded-full px-3 py-1 text-xs font-bold ${quotesLive ? "bg-emerald-400/10 text-emerald-500 dark:text-emerald-300" : "bg-gold/10 text-gold"}`}>
-                    {quotesLive ? "Live" : "Fallback"}
+                    {quotesLive ? "Yahoo live feed" : "Fallback feed"}
                   </span>
                   <LineChart className="size-6 text-gold" />
                 </div>
@@ -317,12 +332,15 @@ export default function ClientPortalPage() {
                   <div key={quote.symbol} className="rounded-md border border-slate-200 p-4 dark:border-white/10">
                     <div className="flex items-center justify-between">
                       <strong>{quote.symbol}</strong>
-                      <span className={quote.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"}>{quote.change}</span>
+                      <div className="text-right">
+                        <span className={quote.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"}>{quote.change}</span>
+                        <p className="text-[0.65rem] uppercase tracking-[0.12em] text-slate-400">{quote.source === "live" ? "Live" : "Fallback"}</p>
+                      </div>
                     </div>
                     <p className="mt-2 text-3xl font-bold">{quote.price}</p>
                     <div className="mt-4 flex h-10 items-end gap-1" aria-hidden="true">
-                      {[35, 52, 43, 70, 61, 82, 74, 92].map((height, index) => (
-                        <span key={index} className="w-full bg-gold/70" style={{ height: `${height}%` }} />
+                      {quoteBars(quote).map((height, index) => (
+                        <span key={index} className={`w-full ${quote.change.startsWith("-") ? "bg-rose-400/70" : "bg-emerald-400/70"}`} style={{ height: `${height}%` }} />
                       ))}
                     </div>
                   </div>
