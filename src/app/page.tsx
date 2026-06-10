@@ -368,7 +368,7 @@ export default function Home() {
     };
 
     loadMarketQuotes();
-    const interval = window.setInterval(loadMarketQuotes, 30000);
+    const interval = window.setInterval(loadMarketQuotes, 5000);
     return () => window.clearInterval(interval);
   }, []);
 

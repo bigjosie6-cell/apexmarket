@@ -157,7 +157,7 @@ export default function ClientPortalPage() {
     };
 
     loadQuotes();
-    const interval = window.setInterval(loadQuotes, 30000);
+    const interval = window.setInterval(loadQuotes, 5000);
     return () => window.clearInterval(interval);
   }, []);
 

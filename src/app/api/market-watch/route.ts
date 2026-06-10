@@ -45,7 +45,7 @@ export async function GET() {
     const symbols = quoteMap.map((quote) => encodeURIComponent(quote.yahoo)).join(",");
     const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (!response.ok) {
