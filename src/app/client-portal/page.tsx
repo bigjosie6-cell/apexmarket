@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
+  Banknote,
   Bell,
   CircleDollarSign,
   Clock3,
+  Coins,
   Headphones,
   Landmark,
   LineChart,
@@ -201,11 +203,11 @@ export default function ClientPortalPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
-      <header className="border-b border-slate-200 bg-white px-4 py-4 dark:border-white/10 dark:bg-[#07111f] lg:px-8">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef3f8_42%,#f8fafc_100%)] text-navy dark:bg-[linear-gradient(180deg,#07111f_0%,#0a1830_50%,#050b15_100%)] dark:text-white">
+      <header className="border-b border-slate-200/80 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/90 lg:px-8">
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">HF</span>
+            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
             <span>Hutridge Financial Client Area</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -265,19 +267,28 @@ export default function ClientPortalPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-        <div className="rounded-lg bg-navy p-6 text-white shadow-xl">
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
+        <div className="relative overflow-hidden rounded-lg bg-[linear-gradient(135deg,#071832_0%,#0A1F44_48%,#102d58_100%)] p-6 text-white shadow-2xl shadow-navy/20">
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_65%_30%,rgba(212,175,55,0.24),transparent_18rem)] lg:block" />
+          <div className="relative grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
               <p className="section-kicker">Application received</p>
-              <h1 className="mt-3 text-4xl font-bold">Welcome, {application.firstName}</h1>
+              <h1 className="mt-3 text-4xl font-bold md:text-5xl">Welcome, {application.firstName}</h1>
               <p className="mt-3 max-w-2xl text-slate-300">
                 Your Hutridge Financial account is verified and active. Your client area is ready for funding, holdings review, and platform access.
               </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <HeroPill label="Portfolio value" value={`$${totalHoldings.toLocaleString()}`} />
+                <HeroPill label="Account tier" value={application.accountType} />
+                <HeroPill label="Market status" value={quotesLive ? "Live feed" : "Standby"} />
+              </div>
             </div>
-            <div className="rounded-lg border border-white/15 bg-white/10 p-5">
-              <p className="text-sm text-slate-300">Account reference</p>
-              <p className="mt-1 text-3xl font-bold">{application.accountNumber}</p>
-              <p className="mt-3 inline-flex rounded-full bg-emerald-300/15 px-3 py-1 text-sm font-semibold text-emerald-200">{application.status === "Pending Verification" ? "Verified" : application.status}</p>
+            <div className="grid gap-4 rounded-lg border border-white/15 bg-white/10 p-5 shadow-2xl shadow-black/10 backdrop-blur">
+              <PortfolioVisual value={`$${totalHoldings.toLocaleString()}`} />
+              <div className="rounded-md border border-white/10 bg-white/10 p-4">
+                <p className="text-sm text-slate-300">Account reference</p>
+                <p className="mt-1 text-3xl font-bold">{application.accountNumber}</p>
+                <p className="mt-3 inline-flex rounded-full bg-emerald-300/15 px-3 py-1 text-sm font-semibold text-emerald-200">{application.status === "Pending Verification" ? "Verified" : application.status}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -315,23 +326,30 @@ export default function ClientPortalPage() {
 
           <div className="grid gap-6">
             <section className="grid gap-4 md:grid-cols-3">
-              <Metric icon={WalletCards} label="Expected Deposit" value={`$${application.expectedDeposit}`} />
-              <Metric icon={CircleDollarSign} label="Base Currency" value={application.baseCurrency} />
-              <Metric icon={LockKeyhole} label="Security" value="2FA Ready" />
+              <Metric icon={WalletCards} label="Expected Deposit" value={`$${application.expectedDeposit}`} tone="gold" />
+              <Metric icon={CircleDollarSign} label="Base Currency" value={application.baseCurrency} tone="blue" />
+              <Metric icon={LockKeyhole} label="Security" value="2FA Ready" tone="green" />
             </section>
 
-            <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
+              <div className="grid gap-5 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_60%,#fff8df_100%)] p-5 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] lg:grid-cols-[1fr_18rem]">
                 <div>
                   <h2 className="flex items-center gap-2 text-xl font-bold"><PieChart className="size-6 text-gold" /> Holdings</h2>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Assets owned and investments held under this client profile.</p>
                 </div>
-                <div className="rounded-md bg-navy px-4 py-3 text-white dark:bg-gold dark:text-navy">
-                  <p className="text-xs uppercase tracking-[0.18em] opacity-75">Portfolio Value</p>
-                  <p className="text-2xl font-bold">${totalHoldings.toLocaleString()}</p>
+                <div className="rounded-md bg-navy p-4 text-white shadow-lg dark:bg-gold dark:text-navy">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-11 place-items-center rounded-md bg-gold/20 dark:bg-navy/10">
+                      <Banknote className="size-6 text-gold dark:text-navy" />
+                    </span>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.18em] opacity-75">Portfolio Value</p>
+                      <p className="text-2xl font-bold">${totalHoldings.toLocaleString()}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-
+              <div className="p-5">
               <div className="mt-5 grid gap-3 md:grid-cols-4">
                 <HoldingStat label="Crypto Exposure" value={`$${cryptoValue.toLocaleString()}`} note="Digital asset holdings" />
                 <HoldingStat label="Public Equities" value={`$${equitiesValue.toLocaleString()}`} note="Stocks and equity baskets" />
@@ -363,6 +381,7 @@ export default function ClientPortalPage() {
                     <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">{holding.status}</span>
                   </div>
                 ))}
+              </div>
               </div>
             </section>
 
@@ -443,10 +462,47 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Metric({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+function HeroPill({ label, value }: { label: string; value: string }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-      <Icon className="size-6 text-gold" />
+    <div className="rounded-md border border-white/15 bg-white/10 p-4 backdrop-blur">
+      <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{label}</p>
+      <p className="mt-1 font-bold text-white">{value}</p>
+    </div>
+  );
+}
+
+function PortfolioVisual({ value }: { value: string }) {
+  return (
+    <div className="relative overflow-hidden rounded-md border border-white/10 bg-[#061126] p-5">
+      <div className="absolute right-4 top-4 grid size-16 place-items-center rounded-full bg-gold/15">
+        <Coins className="size-8 text-gold" />
+      </div>
+      <div className="relative grid min-h-36 content-end">
+        <div className="relative mx-auto mb-2 grid size-28 place-items-center rounded-b-[2rem] rounded-t-lg bg-[linear-gradient(180deg,#f8d75a,#b88912)] shadow-2xl shadow-gold/20">
+          <div className="absolute -top-5 h-8 w-16 rounded-t-full border-8 border-gold/80 border-b-0" />
+          <span className="text-4xl font-black text-navy">$</span>
+        </div>
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Current holdings</p>
+          <p className="mt-1 text-3xl font-bold">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Metric({ icon: Icon, label, value, tone }: { icon: React.ElementType; label: string; value: string; tone: "gold" | "blue" | "green" }) {
+  const toneClass = {
+    gold: "from-gold/20 to-white dark:to-white/5",
+    blue: "from-sky-100 to-white dark:from-sky-400/10 dark:to-white/5",
+    green: "from-emerald-100 to-white dark:from-emerald-400/10 dark:to-white/5",
+  }[tone];
+
+  return (
+    <article className={`rounded-lg border border-slate-200 bg-gradient-to-br ${toneClass} p-5 shadow-lg shadow-slate-200/60 dark:border-white/10 dark:shadow-black/20`}>
+      <span className="grid size-11 place-items-center rounded-md bg-white text-gold shadow-sm dark:bg-white/10">
+        <Icon className="size-6" />
+      </span>
       <p className="mt-4 text-sm text-slate-500 dark:text-slate-300">{label}</p>
       <p className="mt-1 text-2xl font-bold">{value}</p>
     </article>
