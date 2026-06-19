@@ -215,13 +215,13 @@ export default function ClientPortalPage() {
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef3f8_42%,#f8fafc_100%)] text-navy dark:bg-[linear-gradient(180deg,#07111f_0%,#0a1830_50%,#050b15_100%)] dark:text-white">
-      <header className="border-b border-slate-200/80 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/90 lg:px-8">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
-            <span>Hutridge Financial Client Area</span>
+      <header className="relative z-[160] border-b border-slate-200/80 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/90 lg:px-8">
+        <nav className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Link href="/" className="flex min-w-0 items-center gap-3 font-semibold">
+            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
+            <span className="min-w-0 leading-tight">Hutridge Financial Client Area</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
             <div className="relative">
               <button
                 type="button"
@@ -238,7 +238,7 @@ export default function ClientPortalPage() {
                 ) : null}
               </button>
               {notificationsOpen ? (
-                <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1b2c]">
+                <div className="fixed left-3 right-3 top-24 z-[250] max-h-[calc(100dvh-7rem)] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1b2c] sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-[22rem]">
                   <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-white/10">
                     <div>
                       <p className="text-sm font-bold">Notifications</p>
@@ -264,13 +264,13 @@ export default function ClientPortalPage() {
                 </div>
               ) : null}
             </div>
-            <Link href="/trade" className="rounded-md border border-slate-200 px-4 py-2 text-sm font-bold dark:border-white/10">
+            <Link href="/trade" className="rounded-md border border-slate-200 px-3 py-2 text-sm font-bold dark:border-white/10 sm:px-4">
               Trade
             </Link>
-            <Link href="/cashier" className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white dark:bg-gold dark:text-navy">
+            <Link href="/cashier" className="rounded-md bg-navy px-3 py-2 text-sm font-bold text-white dark:bg-gold dark:text-navy sm:px-4">
               Deposit
             </Link>
-            <Link href="/open-account" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy">
+            <Link href="/open-account" className="rounded-md bg-gold px-3 py-2 text-sm font-bold text-navy sm:px-4">
               New Application
             </Link>
           </div>
