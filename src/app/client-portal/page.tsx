@@ -66,7 +66,18 @@ const watchlist: WatchQuote[] = [
 function quoteBars(quote: WatchQuote) {
   const base = Math.abs(Number.parseFloat(quote.price.replaceAll(",", ""))) || 1;
   const change = Math.abs(Number.parseFloat(quote.change)) || 0.1;
-  return Array.from({ length: 8 }, (_, index) => 30 + ((base / (index + 3) + change * 17 + index * 11) % 62));
+  return Array.from({ length: 14 }, (_, index) => 24 + ((base / (index + 3) + change * 17 + index * 11) % 58));
+}
+
+function quoteAsk(price: string) {
+  const numeric = Number.parseFloat(price.replaceAll(",", ""));
+  if (!Number.isFinite(numeric)) return price;
+  const spread = numeric > 1000 ? 0.45 : numeric > 100 ? 0.018 : 0.00014;
+  const decimals = price.includes(".") ? price.split(".")[1].length : 0;
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(numeric + spread);
 }
 
 function portfolioStorageKey(accountNumber?: string) {
@@ -399,39 +410,50 @@ export default function ClientPortalPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="flex items-center justify-between">
+            <section className="overflow-hidden rounded-lg border border-slate-200 bg-[#07111f] text-white shadow-xl shadow-slate-200/60 dark:border-white/10 dark:shadow-black/20">
+              <div className="flex flex-col justify-between gap-4 border-b border-white/10 bg-[linear-gradient(135deg,#061126,#10264a)] p-5 md:flex-row md:items-center">
                 <div>
-                  <h2 className="text-xl font-bold">Live market watch</h2>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold">Market terminal</p>
+                  <h2 className="mt-2 text-2xl font-bold">Live market watch</h2>
+                  <p className="mt-1 text-xs text-slate-400">
                     {quotesUpdatedAt ? `Updated ${new Date(quotesUpdatedAt).toLocaleTimeString()}` : "Waiting for market feed"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${quotesLive ? "bg-emerald-400/10 text-emerald-500 dark:text-emerald-300" : "bg-gold/10 text-gold"}`}>
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${quotesLive ? "bg-emerald-400/10 text-emerald-300" : "bg-gold/10 text-gold"}`}>
                     {quotesLive ? "Yahoo live feed" : "Fallback feed"}
                   </span>
                   <LineChart className="size-6 text-gold" />
                 </div>
               </div>
-              <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {quotes.map((quote) => (
-                  <div key={quote.symbol} className="rounded-md border border-slate-200 p-4 dark:border-white/10">
-                    <div className="flex items-center justify-between">
-                      <strong>{quote.symbol}</strong>
-                      <div className="text-right">
-                        <span className={quote.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"}>{quote.change}</span>
-                        <p className="text-[0.65rem] uppercase tracking-[0.12em] text-slate-400">{quote.source === "live" ? "Live" : "Fallback"}</p>
-                      </div>
-                    </div>
-                    <p className="mt-2 text-3xl font-bold">{quote.price}</p>
-                    <div className="mt-4 flex h-10 items-end gap-1" aria-hidden="true">
-                      {quoteBars(quote).map((height, index) => (
-                        <span key={index} className={`w-full ${quote.change.startsWith("-") ? "bg-rose-400/70" : "bg-emerald-400/70"}`} style={{ height: `${height}%` }} />
-                      ))}
-                    </div>
+              <div className="overflow-x-auto">
+                <div className="min-w-[720px]">
+                  <div className="grid grid-cols-[1fr_0.8fr_0.8fr_0.7fr_1fr] gap-3 border-b border-white/10 bg-white/[0.03] px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                    <span>Symbol</span>
+                    <span>Bid</span>
+                    <span>Ask</span>
+                    <span>Change</span>
+                    <span className="text-right">Trend</span>
                   </div>
-                ))}
+                  <div>
+                    {quotes.map((quote) => (
+                      <div key={quote.symbol} className="grid grid-cols-[1fr_0.8fr_0.8fr_0.7fr_1fr] items-center gap-3 border-b border-white/10 px-5 py-4 last:border-b-0">
+                        <div>
+                          <strong className="text-lg">{quote.symbol}</strong>
+                          <p className="mt-1 text-[0.65rem] uppercase tracking-[0.12em] text-slate-500">{quote.source === "live" ? "Live" : "Fallback"}</p>
+                        </div>
+                        <span className="font-mono text-lg font-bold">{quote.price}</span>
+                        <span className="font-mono text-slate-300">{quoteAsk(quote.price)}</span>
+                        <span className={`font-bold ${quote.change.startsWith("+") ? "text-emerald-300" : "text-rose-300"}`}>{quote.change}</span>
+                        <div className="flex h-10 items-end justify-end gap-1" aria-hidden="true">
+                          {quoteBars(quote).map((height, index) => (
+                            <span key={index} className={`w-1 rounded-full ${quote.change.startsWith("-") ? "bg-rose-400/70" : "bg-emerald-400/70"}`} style={{ height: `${height}%` }} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
