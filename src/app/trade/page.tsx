@@ -147,24 +147,24 @@ export default function TradePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#061126] text-white">
-      <header className="border-b border-white/10 bg-[#07111f] px-4 py-4 lg:px-8">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 font-semibold">
-            <span className="grid size-10 place-items-center rounded-md bg-white text-gold">HF</span>
-            <span>Hutridge Financial Live Terminal</span>
+    <main className="min-h-screen bg-[linear-gradient(180deg,#061126_0%,#071832_58%,#050b15_100%)] text-white">
+      <header className="border-b border-white/10 bg-[#07111f]/90 px-4 py-4 shadow-xl shadow-black/20 backdrop-blur-xl lg:px-8">
+        <nav className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Link href="/" className="flex min-w-0 items-center gap-3 font-semibold">
+            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-white text-gold">HF</span>
+            <span className="min-w-0 leading-tight">Hutridge Financial Live Terminal</span>
           </Link>
-          <div className="flex gap-3">
-            <Link href="/login" className="rounded-md border border-white/15 px-4 py-2 text-sm font-bold">Login</Link>
-            <Link href="/cashier" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy">Deposit</Link>
-            <Link href="/client-portal" className="rounded-md border border-white/15 px-4 py-2 text-sm font-bold">Client Area</Link>
+          <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+            <Link href="/login" className="rounded-md border border-white/15 px-3 py-2 text-sm font-bold sm:px-4">Login</Link>
+            <Link href="/cashier" className="rounded-md bg-gold px-3 py-2 text-sm font-bold text-navy sm:px-4">Deposit</Link>
+            <Link href="/client-portal" className="rounded-md border border-white/15 px-3 py-2 text-sm font-bold sm:px-4">Client Area</Link>
           </div>
         </nav>
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
         <aside className="grid gap-5">
-          <article className={`rounded-lg border p-5 ${isLoggedIn ? "border-emerald-300/30 bg-emerald-400/10" : "border-gold/40 bg-gold/10"}`}>
+          <article className={`rounded-lg border p-5 shadow-2xl shadow-black/10 ${isLoggedIn ? "border-emerald-300/30 bg-emerald-400/10" : "border-gold/40 bg-gold/10"}`}>
             {isLoggedIn ? <ShieldCheck className="size-7 text-emerald-300" /> : <UserPlus className="size-7 text-gold" />}
             <h1 className="mt-3 text-2xl font-bold">{isLoggedIn ? "Trading access active" : "Register before trading"}</h1>
             <p className="mt-2 text-sm leading-6 text-amber-100">
@@ -193,7 +193,7 @@ export default function TradePage() {
         </aside>
 
         <div className="grid gap-5">
-          <section className="rounded-lg border border-white/10 bg-[#081832] p-5">
+          <section className="rounded-lg border border-white/10 bg-[#081832]/95 p-5 shadow-2xl shadow-black/20">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <p className="section-kicker">Live terminal</p>
@@ -214,7 +214,7 @@ export default function TradePage() {
           </section>
 
           <section className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-            <article className="rounded-lg border border-white/10 bg-white/5 p-5">
+            <article className="rounded-lg border border-white/10 bg-white/5 p-5 shadow-xl shadow-black/10">
               <h2 className="flex items-center gap-2 text-xl font-bold"><LineChart className="size-5 text-gold" /> Market watch</h2>
               <div className="mt-4 grid gap-3">
                 {symbols.map(([name, bid, ask, spread]) => (
@@ -222,7 +222,7 @@ export default function TradePage() {
                     type="button"
                     key={name}
                     onClick={() => setSymbol(name)}
-                    className={`grid grid-cols-4 items-center gap-3 rounded-md border p-3 text-left text-sm ${symbol === name ? "border-gold bg-gold/10" : "border-white/10 bg-[#07111f]"}`}
+                    className={`grid grid-cols-2 items-center gap-3 rounded-md border p-3 text-left text-sm transition hover:border-gold/70 sm:grid-cols-4 ${symbol === name ? "border-gold bg-gold/10" : "border-white/10 bg-[#07111f]"}`}
                   >
                     <strong>{name}</strong>
                     <span>Bid {bid}</span>
@@ -233,7 +233,7 @@ export default function TradePage() {
               </div>
             </article>
 
-            <form onSubmit={submit} className="rounded-lg border border-white/10 bg-white/5 p-5">
+            <form onSubmit={submit} className="rounded-lg border border-white/10 bg-white/5 p-5 shadow-xl shadow-black/10">
               <h2 className="text-xl font-bold">Live order ticket</h2>
               <label className="mt-4 grid gap-2 text-sm font-semibold">
                 Symbol

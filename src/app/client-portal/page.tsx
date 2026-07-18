@@ -214,7 +214,7 @@ export default function ClientPortalPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef3f8_42%,#f8fafc_100%)] text-navy dark:bg-[linear-gradient(180deg,#07111f_0%,#0a1830_50%,#050b15_100%)] dark:text-white">
+    <main className="page-shell">
       <header className="relative z-[160] border-b border-slate-200/80 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/90 lg:px-8">
         <nav className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex min-w-0 items-center gap-3 font-semibold">
@@ -278,7 +278,7 @@ export default function ClientPortalPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
-        <div className="relative overflow-hidden rounded-lg bg-[linear-gradient(135deg,#071832_0%,#0A1F44_48%,#102d58_100%)] p-6 text-white shadow-2xl shadow-navy/20">
+        <div className="premium-panel relative overflow-hidden p-5 sm:p-6">
           <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_65%_30%,rgba(212,175,55,0.24),transparent_18rem)] lg:block" />
           <div className="relative grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
@@ -306,7 +306,7 @@ export default function ClientPortalPage() {
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
           <aside className="grid gap-6">
-            <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <article className="premium-card p-5">
               <h2 className="flex items-center gap-2 text-lg font-bold"><BadgeCheck className="size-5 text-gold" /> Account profile</h2>
               <div className="mt-4 grid gap-3 text-sm text-slate-600 dark:text-slate-300">
                 <Row label="Client" value={`${application.firstName} ${application.lastName}`} />
@@ -317,7 +317,7 @@ export default function ClientPortalPage() {
               </div>
             </article>
 
-            <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <article className="premium-card p-5">
               <h2 className="flex items-center gap-2 text-lg font-bold"><ShieldCheck className="size-5 text-gold" /> Verification timeline</h2>
               <div className="mt-5 grid gap-4">
                 {["Application submitted", "Identity verified", "Account approved", "Platform credentials issued"].map((item) => (
@@ -342,7 +342,7 @@ export default function ClientPortalPage() {
               <Metric icon={LockKeyhole} label="Security" value="2FA Ready" tone="green" />
             </section>
 
-            <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
+            <section className="premium-card overflow-hidden">
               <div className="grid gap-5 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_60%,#fff8df_100%)] p-5 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] lg:grid-cols-[1fr_18rem]">
                 <div>
                   <h2 className="flex items-center gap-2 text-xl font-bold"><PieChart className="size-6 text-gold" /> Holdings</h2>
@@ -389,14 +389,14 @@ export default function ClientPortalPage() {
                     <span className="text-slate-600 dark:text-slate-300">{holding.category}</span>
                     <span className="font-bold">${holding.value.toLocaleString()}</span>
                     <span className={holding.returnValue.startsWith("+") ? "font-bold text-emerald-500" : "font-bold text-gold"}>{holding.returnValue}</span>
-                    <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">{holding.status}</span>
+                    <span className="w-fit rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">{holding.status}</span>
                   </div>
                 ))}
               </div>
               </div>
             </section>
 
-            <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <section className="premium-card p-5">
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
                   <h2 className="text-xl font-bold">Funding instruction preview</h2>

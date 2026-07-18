@@ -141,9 +141,9 @@ export default function SupportPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
-      <section className="bg-navy px-4 py-6 text-white lg:px-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+    <main className="page-shell">
+      <section className="bg-navy px-4 py-5 text-white shadow-xl shadow-navy/15 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
             Back to Hutridge Financial
@@ -170,7 +170,7 @@ export default function SupportPage() {
 
         <section className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {supportCards.map(([title, description, Icon]) => (
-            <article key={title as string} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <article key={title as string} className="premium-card p-5">
               <Icon className="size-8 text-gold" />
               <h2 className="mt-4 text-xl font-bold">{title as string}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{description as string}</p>
@@ -180,24 +180,24 @@ export default function SupportPage() {
 
         <section className="mt-10 grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
           <aside className="grid content-start gap-4">
-            <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+            <div className="premium-card p-5">
               <Clock3 className="size-7 text-gold" />
-              <h2 className="mt-3 text-xl font-bold">24/5 support desk</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Urgent account and cashier issues are routed first.</p>
+              <h2 className="mt-3 text-xl font-bold">24/7 support desk</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Urgent account and cashier issues are routed every day.</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+            <div className="premium-card p-5">
               <Mail className="size-7 text-gold" />
               <h2 className="mt-3 text-xl font-bold">support@hutridgefinancial.com</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Use your ticket reference when following up.</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+            <div className="premium-card p-5">
               <Mail className="size-7 text-gold" />
               <h2 className="mt-3 text-xl font-bold">{donationSupportEmail}</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Donation representatives use this email for pledge follow-up.</p>
             </div>
           </aside>
 
-          <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl dark:border-white/10 dark:bg-[#0b1728]">
+          <section className="premium-card overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-200 bg-navy px-5 py-4 text-white dark:border-white/10">
               <div className="flex items-center gap-3">
                 <div className="grid size-11 place-items-center rounded-full bg-gold text-navy">

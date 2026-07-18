@@ -51,9 +51,9 @@ export default function CashierPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
-      <section className="bg-navy px-4 py-6 text-white lg:px-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+    <main className="page-shell">
+      <section className="bg-navy px-4 py-5 text-white shadow-xl shadow-navy/15 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/client-portal" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
             Back to Client Area
@@ -65,14 +65,14 @@ export default function CashierPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <aside>
           <p className="section-kicker">Secure cashier</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">Deposit funds to your trading account</h1>
           <p className="mt-5 text-lg leading-8 text-slate-600 dark:text-slate-300">
             Submit a deposit request and the Hutridge Financial payments desk will provide the correct payment details directly for your selected method.
           </p>
-          <div className="mt-8 rounded-lg border border-gold/30 bg-gold/10 p-5 text-slate-700 dark:text-slate-100">
+          <div className="premium-card mt-8 p-5 text-slate-700 dark:text-slate-100">
             <MessageCircle className="size-7 text-gold" />
             <h2 className="mt-3 font-bold">Representative-provided payment details</h2>
             <p className="mt-2 text-sm leading-6">
@@ -81,7 +81,7 @@ export default function CashierPage() {
           </div>
         </aside>
 
-        <form onSubmit={submit} className="rounded-lg border border-slate-200 bg-white p-6 shadow-xl dark:border-white/10 dark:bg-white/5">
+        <form onSubmit={submit} className="premium-card p-5 sm:p-6">
           <h2 className="text-2xl font-bold">Create deposit request</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="grid gap-2 text-sm font-semibold">
@@ -108,7 +108,7 @@ export default function CashierPage() {
                   key={name}
                   type="button"
                   onClick={() => setMethod(name)}
-                  className={`rounded-lg border p-4 text-left ${method === name ? "border-gold bg-navy text-white" : "border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/5"}`}
+                  className={`rounded-lg border p-4 text-left transition hover:-translate-y-0.5 hover:border-gold ${method === name ? "border-gold bg-navy text-white shadow-lg shadow-navy/15" : "border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/5"}`}
                 >
                   <Icon className="size-6 text-gold" />
                   <p className="mt-3 font-bold">{name}</p>
@@ -118,7 +118,7 @@ export default function CashierPage() {
             </div>
           </div>
 
-          <button disabled={loading} className="mt-6 w-full rounded-md bg-gold px-6 py-4 font-bold text-navy disabled:opacity-60">
+          <button disabled={loading} className="hf-button hf-button-primary mt-6 w-full disabled:opacity-60">
             {loading ? "Creating request..." : "Create Deposit Request"}
           </button>
           <p className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">{status}</p>

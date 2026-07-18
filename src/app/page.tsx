@@ -396,14 +396,14 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white text-navy dark:bg-[#07111f] dark:text-white">
-      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-[#07111f]/90">
+    <main className="page-shell">
+      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/82 shadow-sm shadow-navy/5 backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/82">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8" aria-label="Main navigation">
-          <a href="#home" className="flex items-center gap-3 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-            <span className="grid size-10 place-items-center rounded-md bg-navy text-gold dark:bg-white">HF</span>
-            <span className="text-xl">Hutridge Financial</span>
+          <a href="#home" className="flex min-w-0 items-center gap-3 font-semibold" onClick={() => setMobileMenuOpen(false)}>
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
+            <span className="min-w-0 text-xl leading-tight">Hutridge Financial</span>
           </a>
-          <div className="hidden items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300 lg:flex">
+          <div className="hidden items-center gap-5 text-sm font-semibold text-slate-600 dark:text-slate-300 lg:flex xl:gap-6">
             {navItems.map((item) => (
               <a key={item} href={navHref(item)} className="hover:text-gold">
                 {item}
@@ -413,7 +413,7 @@ export default function Home() {
           <div className="hidden items-center gap-3 lg:flex">
             <a href="/login" className="px-3 py-2 text-sm font-semibold">Login</a>
             <a href="/open-account" className="px-3 py-2 text-sm font-semibold">Trade</a>
-            <a href="/open-account" className="rounded-md bg-gold px-4 py-2 text-sm font-bold text-navy shadow-lg shadow-gold/20">Open Account</a>
+            <a href="/open-account" className="hf-button hf-button-primary px-4 py-2 text-sm">Open Account</a>
           </div>
           <button
             className="rounded-md border border-slate-300 p-2 lg:hidden dark:border-white/30"
@@ -472,7 +472,7 @@ export default function Home() {
         ) : null}
       </header>
 
-      <section id="home" className="relative overflow-hidden bg-white text-navy transition-colors duration-300 dark:bg-navy dark:text-white">
+      <section id="home" className="relative overflow-hidden text-navy transition-colors duration-300 dark:text-white">
         <div className="absolute inset-0">
           <Image
             className="h-full w-full object-cover opacity-16 grayscale dark:opacity-30 dark:grayscale-0"
@@ -484,21 +484,21 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(212,175,55,.18),transparent_34%),linear-gradient(90deg,rgba(255,255,255,.98)_0%,rgba(248,250,252,.94)_50%,rgba(226,232,240,.82)_100%)] dark:bg-[radial-gradient(circle_at_70%_20%,rgba(212,175,55,.24),transparent_34%),linear-gradient(90deg,#0A1F44_0%,rgba(10,31,68,.9)_46%,rgba(10,31,68,.7)_100%)]" />
         </div>
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <p className="mb-4 text-sm font-bold uppercase tracking-[0.32em] text-gold">Institutional forex and CFD trading</p>
-            <h1 className="max-w-3xl text-5xl font-semibold leading-tight md:text-6xl">Trade Global Markets with Confidence</h1>
+            <h1 className="max-w-3xl text-4xl font-semibold leading-[1.04] sm:text-5xl md:text-6xl">Trade Global Markets with Confidence</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-200">
               Access forex, commodities, indices, and CFDs through institutional-grade technology and competitive spreads.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href="/open-account" className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-4 font-bold text-navy">
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              <a href="/open-account" className="hf-button hf-button-primary">
                 Open Live Account <ArrowRight className="size-4" />
               </a>
-              <a href="/open-account" className="inline-flex items-center justify-center rounded-md border border-gold/70 px-6 py-4 font-bold text-gold">
+              <a href="/open-account" className="hf-button border border-gold/70 text-gold">
                 Register to Trade
               </a>
-              <a href="#live-chart" className="inline-flex items-center justify-center rounded-md border border-navy/20 px-6 py-4 font-bold text-navy dark:border-white/30 dark:text-white">
+              <a href="#live-chart" className="hf-button hf-button-secondary">
                 Live Chart
               </a>
             </div>
@@ -608,9 +608,9 @@ export default function Home() {
                 : "Live market watch is refreshing. Fallback prices may display briefly if the feed is unavailable."}
             </p>
           </div>
-          <div className="overflow-hidden rounded-lg border border-white/15">
+          <div className="overflow-hidden rounded-lg border border-white/15 shadow-2xl shadow-black/20">
             {liveMarketRows.map(([pair, bid, ask, change], index) => (
-              <div key={pair} className="grid grid-cols-2 items-center gap-4 border-b border-white/10 bg-white/[0.04] p-4 last:border-b-0 md:grid-cols-5">
+              <div key={pair} className="grid grid-cols-2 items-center gap-4 border-b border-white/10 bg-white/[0.04] p-4 last:border-b-0 sm:grid-cols-3 md:grid-cols-5">
                 <strong>{pair}</strong>
                 <span>Bid {bid}</span>
                 <span>Ask {ask}</span>

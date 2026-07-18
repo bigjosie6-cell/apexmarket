@@ -219,8 +219,8 @@ export default function OpenAccountPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-navy dark:bg-[#07111f] dark:text-white">
-      <section className="bg-navy px-4 py-6 text-white lg:px-8">
+    <main className="page-shell">
+      <section className="bg-navy px-4 py-5 text-white shadow-xl shadow-navy/15 lg:px-8">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
             <ArrowLeft className="size-4" />
@@ -241,7 +241,7 @@ export default function OpenAccountPage() {
             Complete a secure application, choose your account tier, upload verification details, and enter the Hutridge Financial client area.
           </p>
 
-          <div className="mt-8 rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+          <div className="premium-card mt-8 p-5">
             <div className="flex items-center gap-3">
               <BadgeCheck className="size-8 text-gold" />
               <div>
@@ -262,7 +262,7 @@ export default function OpenAccountPage() {
           </div>
         </aside>
 
-        <form onSubmit={submit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-white/5 md:p-7">
+        <form onSubmit={submit} className="premium-card p-5 md:p-7">
           <div className="mb-6 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
             <div className="h-full bg-gold transition-all" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
           </div>
@@ -308,7 +308,7 @@ export default function OpenAccountPage() {
                     key={account.name}
                     type="button"
                     onClick={() => update("accountType", account.name)}
-                    className={`rounded-lg border p-4 text-left transition ${form.accountType === account.name ? "border-gold bg-navy text-white shadow-lg" : "border-slate-200 bg-white dark:border-white/10 dark:bg-white/5"}`}
+                    className={`rounded-lg border p-4 text-left transition hover:-translate-y-0.5 hover:border-gold ${form.accountType === account.name ? "border-gold bg-navy text-white shadow-lg" : "border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/5"}`}
                   >
                     <p className="text-lg font-bold">{account.name}</p>
                     <p className="mt-3 text-sm opacity-80">Minimum deposit</p>
@@ -361,12 +361,12 @@ export default function OpenAccountPage() {
                 <Field label="Expected first deposit" error={errors.expectedDeposit}>
                   <input className="form-field" value={form.expectedDeposit} onChange={(event) => update("expectedDeposit", event.target.value)} type="number" min="100" />
                 </Field>
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
+                <div className="premium-card p-5">
                   <WalletCards className="size-7 text-gold" />
                   <p className="mt-3 font-bold">Funding instruction preview</p>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">After submission, Hutridge Financial will show a secure cashier with transaction references, limits, and funding details for {form.fundingMethod}.</p>
                 </div>
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
+                <div className="premium-card p-5">
                   <ShieldCheck className="size-7 text-gold" />
                   <p className="mt-3 font-bold">Account review</p>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Your funding preference is reviewed before the client area opens.</p>
@@ -431,7 +431,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 
 function ReviewCard({ title, rows }: { title: string; rows: string[] }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
+    <article className="premium-card p-5">
       <h3 className="font-bold">{title}</h3>
       <div className="mt-3 grid gap-2 text-sm text-slate-600 dark:text-slate-300">
         {rows.map((row) => <p key={row}>{row}</p>)}
@@ -442,7 +442,7 @@ function ReviewCard({ title, rows }: { title: string; rows: string[] }) {
 
 function CheckBox({ checked, onChange, error, children }: { checked: boolean; onChange: (value: boolean) => void; error?: string; children: React.ReactNode }) {
   return (
-    <label className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm dark:border-white/10 dark:bg-white/5">
+    <label className="premium-card p-4 text-sm">
       <span className="flex items-start gap-3">
         <input className="mt-1 size-4 accent-[#d4af37]" checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
         <span>{children}</span>

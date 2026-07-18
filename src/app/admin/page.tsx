@@ -461,9 +461,9 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#07111f] px-4 py-10 text-white lg:px-8">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,.1),transparent_28rem),linear-gradient(180deg,#07111f_0%,#081832_56%,#050b15_100%)] px-4 py-8 text-white lg:px-8">
       <section className="mx-auto max-w-5xl">
-        <div className="rounded-lg border border-white/10 bg-[#0A1F44] p-6 shadow-2xl">
+        <div className="premium-panel p-5 sm:p-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <p className="section-kicker">Private admin</p>
@@ -471,13 +471,13 @@ export default function AdminPage() {
               <p className="mt-3 max-w-2xl text-slate-300">Only the configured owner ID and secret can access deposit approval tools.</p>
             </div>
             {signedIn ? (
-              <button onClick={logout} className="rounded-md border border-white/20 px-4 py-3 font-bold">Sign Out</button>
+              <button onClick={logout} className="hf-button border border-white/20 px-4 py-3 text-sm">Sign Out</button>
             ) : null}
           </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <form onSubmit={login} className="rounded-lg border border-white/10 bg-white/5 p-6">
+          <form onSubmit={login} className="rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6">
             <LockKeyhole className="size-8 text-gold" />
             <h2 className="mt-4 text-2xl font-bold">Owner Login</h2>
             <label className="mt-5 grid gap-2 text-sm font-semibold">
@@ -488,12 +488,12 @@ export default function AdminPage() {
               Admin secret
               <input className="form-field" value={secret} onChange={(event) => setSecret(event.target.value)} placeholder="private secret" type="password" />
             </label>
-            <button disabled={busyAction === "login"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-wait disabled:opacity-60">
+            <button disabled={busyAction === "login"} className="hf-button hf-button-primary mt-5 w-full disabled:cursor-wait disabled:opacity-60">
               {busyAction === "login" ? "Unlocking..." : "Unlock Admin"}
             </button>
           </form>
 
-          <form onSubmit={saveDonationAddress} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+          <form onSubmit={saveDonationAddress} className={`rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6 ${signedIn ? "" : "opacity-50"}`}>
             <ShieldCheck className="size-8 text-gold" />
             <h2 className="mt-4 text-2xl font-bold">Donation Receiving Address</h2>
             <p className="mt-2 text-sm text-slate-300">Set the payment address the donation agent can provide after a donor prepares a pledge.</p>
@@ -507,14 +507,14 @@ export default function AdminPage() {
                 disabled={!signedIn}
               />
             </label>
-            <button disabled={!signedIn || busyAction === "donation"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+            <button disabled={!signedIn || busyAction === "donation"} className="hf-button hf-button-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-50">
               {busyAction === "donation" ? "Saving Donation Address..." : "Save Donation Address"}
             </button>
           </form>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr]">
-          <form onSubmit={sendClientEmail} className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+          <form onSubmit={sendClientEmail} className={`rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6 ${signedIn ? "" : "opacity-50"}`}>
             <Mail className="size-8 text-gold" />
             <h2 className="mt-4 text-2xl font-bold">Send Client Email</h2>
             <p className="mt-2 text-sm text-slate-300">Send a direct Hutridge Financial email to any user from the owner console.</p>
@@ -538,19 +538,19 @@ export default function AdminPage() {
                 disabled={!signedIn}
               />
             </label>
-            <button disabled={!signedIn || busyAction === "email"} className="mt-5 w-full rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+            <button disabled={!signedIn || busyAction === "email"} className="hf-button hf-button-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-50">
               {busyAction === "email" ? "Sending Email..." : "Send Email"}
             </button>
           </form>
 
-          <section className={`rounded-lg border border-white/10 bg-white/5 p-6 ${signedIn ? "" : "opacity-50"}`}>
+          <section className={`rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6 ${signedIn ? "" : "opacity-50"}`}>
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <Inbox className="size-8 text-gold" />
                 <h2 className="mt-4 text-2xl font-bold">Admin Inbox</h2>
                 <p className="mt-2 text-sm text-slate-300">View recent signups and support tickets submitted through the website.</p>
               </div>
-              <button type="button" onClick={loadAdminInbox} disabled={!signedIn || busyAction === "inbox"} className="rounded-md bg-gold px-5 py-3 font-bold text-navy transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" onClick={loadAdminInbox} disabled={!signedIn || busyAction === "inbox"} className="hf-button hf-button-primary disabled:cursor-not-allowed disabled:opacity-50">
                 {busyAction === "inbox" ? "Refreshing Inbox..." : "Refresh Inbox"}
               </button>
             </div>
