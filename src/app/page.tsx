@@ -397,16 +397,13 @@ export default function Home() {
 
   return (
     <main className="page-shell">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061126]/94 text-white shadow-2xl shadow-black/20 backdrop-blur-xl">
-        <div className="signal-strip px-4 py-2 text-center text-xs font-black uppercase tracking-[0.18em]">
-          Hutridge Financial Prime Desk - Live market watch, client portal, funding desk, and owner console are active
-        </div>
+      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 shadow-sm shadow-navy/5 backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/88">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8" aria-label="Main navigation">
           <a href="#home" className="flex min-w-0 items-center gap-3 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-            <span className="grid size-12 shrink-0 place-items-center rounded-md bg-gold text-navy shadow-lg shadow-gold/25">HF</span>
-            <span className="min-w-0 text-xl leading-tight">Hutridge Financial</span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
+            <span className="min-w-0 text-xl leading-tight text-navy dark:text-white">Hutridge Financial</span>
           </a>
-          <div className="hidden items-center gap-5 text-sm font-semibold text-slate-200 lg:flex xl:gap-6">
+          <div className="hidden items-center gap-5 text-sm font-semibold text-slate-600 dark:text-slate-300 lg:flex xl:gap-6">
             {navItems.map((item) => (
               <a key={item} href={navHref(item)} className="hover:text-gold">
                 {item}
@@ -414,8 +411,8 @@ export default function Home() {
             ))}
           </div>
           <div className="hidden items-center gap-3 lg:flex">
-            <a href="/login" className="rounded-md border border-white/15 px-3 py-2 text-sm font-semibold">Login</a>
-            <a href="/open-account" className="rounded-md border border-gold/50 px-3 py-2 text-sm font-semibold text-gold">Trade</a>
+            <a href="/login" className="px-3 py-2 text-sm font-semibold text-navy dark:text-white">Login</a>
+            <a href="/open-account" className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-navy dark:border-white/15 dark:text-white">Trade</a>
             <a href="/open-account" className="hf-button hf-button-primary px-4 py-2 text-sm">Open Account</a>
           </div>
           <button
@@ -475,26 +472,23 @@ export default function Home() {
         ) : null}
       </header>
 
-      <section id="home" className="broker-hero relative overflow-hidden text-white">
+      <section id="home" className="relative overflow-hidden text-navy dark:text-white">
         <div className="absolute inset-0">
           <Image
-            className="h-full w-full object-cover opacity-22 grayscale"
+            className="h-full w-full object-cover opacity-20 grayscale dark:opacity-28 dark:grayscale-0"
             src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=1800&q=80"
             alt="Professional trading desk with financial market screens"
             fill
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,11,22,.98)_0%,rgba(7,24,50,.92)_48%,rgba(10,31,68,.74)_100%)]" />
+          <div className="broker-hero-clean absolute inset-0" />
         </div>
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:py-20 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:py-24">
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-24">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-gold">
-              <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,.85)]" />
-              Institutional forex and CFD trading
-            </div>
-            <h1 className="max-w-3xl text-5xl font-black leading-[0.98] tracking-normal sm:text-6xl md:text-7xl">Trade Global Markets with Confidence</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+            <p className="mb-4 text-sm font-bold uppercase tracking-[0.32em] text-gold">Institutional forex and CFD trading</p>
+            <h1 className="max-w-3xl text-4xl font-semibold leading-[1.03] sm:text-5xl md:text-6xl">Trade Global Markets with Confidence</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-200">
               Access forex, commodities, indices, and CFDs through institutional-grade technology and competitive spreads.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -510,23 +504,23 @@ export default function Home() {
             </div>
             <div className="mobile-safe-grid mt-10 grid gap-3">
               {["100+ Instruments", "Ultra-Low Spreads", "Fast Execution", "24/7 Support"].map((stat) => (
-                <div key={stat} className="gold-frame rounded-md bg-white/8 p-4 backdrop-blur">
+                <div key={stat} className="trust-pill rounded-md p-4 backdrop-blur">
                   <Check className="mb-3 size-5 text-gold" />
-                  <p className="text-sm font-black">{stat}</p>
+                  <p className="text-sm font-semibold">{stat}</p>
                 </div>
               ))}
             </div>
           </motion.div>
-          <motion.div className="command-card gold-frame p-3 sm:p-4" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.1 }}>
+          <motion.div className="terminal-shell p-3 sm:p-4" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.1 }}>
             <div className="mb-3 grid gap-3 sm:grid-cols-3">
               {[
                 ["Live Feed", marketsLive ? "Connected" : "Fallback"],
                 ["Client Portal", "Active"],
                 ["Funding Desk", "Online"],
               ].map(([label, value]) => (
-                <div key={label} className="rounded-md border border-white/10 bg-white/[0.06] p-3">
-                  <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-slate-400">{label}</p>
-                  <p className="mt-1 text-lg font-black text-white">{value}</p>
+                <div key={label} className="rounded-md border border-slate-200 bg-white/72 p-3 dark:border-white/10 dark:bg-white/[0.06]">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{label}</p>
+                  <p className="mt-1 text-lg font-bold text-navy dark:text-white">{value}</p>
                 </div>
               ))}
             </div>
