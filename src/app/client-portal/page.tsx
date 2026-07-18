@@ -215,10 +215,10 @@ export default function ClientPortalPage() {
 
   return (
     <main className="page-shell">
-      <header className="relative z-[160] border-b border-slate-200/80 bg-white/90 px-4 py-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#07111f]/90 lg:px-8">
+      <header className="relative z-[160] border-b border-white/10 bg-[#061126]/94 px-4 py-4 text-white shadow-2xl shadow-black/15 backdrop-blur-xl lg:px-8">
         <nav className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex min-w-0 items-center gap-3 font-semibold">
-            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-navy text-gold shadow-lg shadow-navy/15 dark:bg-white">HF</span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-gold text-navy shadow-lg shadow-gold/20">HF</span>
             <span className="min-w-0 leading-tight">Hutridge Financial Client Area</span>
           </Link>
           <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
@@ -226,7 +226,7 @@ export default function ClientPortalPage() {
               <button
                 type="button"
                 onClick={toggleNotifications}
-                className="relative rounded-md border border-slate-200 p-2 transition hover:border-gold hover:text-gold dark:border-white/10"
+                className="relative rounded-md border border-white/15 bg-white/5 p-2 transition hover:border-gold hover:text-gold"
                 aria-label="Notifications"
                 aria-expanded={notificationsOpen}
               >
@@ -264,10 +264,10 @@ export default function ClientPortalPage() {
                 </div>
               ) : null}
             </div>
-            <Link href="/trade" className="rounded-md border border-slate-200 px-3 py-2 text-sm font-bold dark:border-white/10 sm:px-4">
+            <Link href="/trade" className="rounded-md border border-white/15 px-3 py-2 text-sm font-bold sm:px-4">
               Trade
             </Link>
-            <Link href="/cashier" className="rounded-md bg-navy px-3 py-2 text-sm font-bold text-white dark:bg-gold dark:text-navy sm:px-4">
+            <Link href="/cashier" className="rounded-md bg-gold px-3 py-2 text-sm font-bold text-navy sm:px-4">
               Deposit
             </Link>
             <Link href="/open-account" className="rounded-md bg-gold px-3 py-2 text-sm font-bold text-navy sm:px-4">
@@ -282,8 +282,8 @@ export default function ClientPortalPage() {
           <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_65%_30%,rgba(212,175,55,0.24),transparent_18rem)] lg:block" />
           <div className="relative grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
-              <p className="section-kicker">Application received</p>
-              <h1 className="mt-3 text-4xl font-bold md:text-5xl">Welcome, {application.firstName}</h1>
+              <p className="section-kicker">Prime client dashboard</p>
+              <h1 className="mt-3 text-4xl font-black leading-tight md:text-6xl">Welcome, {application.firstName}</h1>
               <p className="mt-3 max-w-2xl text-slate-300">
                 Your Hutridge Financial account is verified and active. Your client area is ready for funding, holdings review, and platform access.
               </p>
@@ -293,12 +293,12 @@ export default function ClientPortalPage() {
                 <HeroPill label="Market status" value={quotesLive ? "Live feed" : "Standby"} />
               </div>
             </div>
-            <div className="grid gap-4 rounded-lg border border-white/15 bg-white/10 p-5 shadow-2xl shadow-black/10 backdrop-blur">
+            <div className="gold-frame grid gap-4 rounded-lg bg-white/10 p-5 shadow-2xl shadow-black/10 backdrop-blur">
               <PortfolioVisual value={`$${totalHoldings.toLocaleString()}`} />
               <div className="rounded-md border border-white/10 bg-white/10 p-4">
                 <p className="text-sm text-slate-300">Account reference</p>
                 <p className="mt-1 text-3xl font-bold">{application.accountNumber}</p>
-                <p className="mt-3 inline-flex rounded-full bg-emerald-300/15 px-3 py-1 text-sm font-semibold text-emerald-200">{application.status === "Pending Verification" ? "Verified" : application.status}</p>
+                <p className="mt-3 inline-flex rounded-full bg-emerald-300/15 px-3 py-1 text-sm font-black text-emerald-200">{application.status === "Pending Verification" ? "Verified" : application.status}</p>
               </div>
             </div>
           </div>

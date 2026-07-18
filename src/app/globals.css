@@ -165,3 +165,34 @@ textarea {
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
 }
+
+.signal-strip {
+  background:
+    linear-gradient(90deg, #d4af37 0%, #f4d76a 34%, #d4af37 68%, #b99120 100%);
+  color: #0a1f44;
+}
+
+.broker-hero {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(212, 175, 55, 0.32), transparent 18rem),
+    radial-gradient(circle at 50% 88%, rgba(16, 185, 129, 0.16), transparent 20rem),
+    linear-gradient(135deg, #040b16 0%, #071832 38%, #0a1f44 100%);
+}
+
+.command-card {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.5rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045)),
+    #07111f;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.36);
+}
+
+.gold-frame {
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 70px rgba(212, 175, 55, 0.12);
+}
+
+.mobile-safe-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
